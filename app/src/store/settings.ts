@@ -3,12 +3,12 @@ import { persist } from 'zustand/middleware';
 import { persistConfig } from './persistConfig';
 
 export type ThemeMode = 'system' | 'day' | 'night' | 'amoled';
-export type SettingsValues = { theme: ThemeMode; fontStep: number; keepAwake: boolean; ttsRate: number; language?: string; legacyImported: boolean };
+export type SettingsValues = { theme: ThemeMode; fontStep: number; keepAwake: boolean; ttsRate: number; language?: string };
 type SettingsState = SettingsValues & { set: (patch: Partial<SettingsValues>) => void };
 
 export const useSettings = create<SettingsState>()(
   persist(
-    (set) => ({ theme: 'system', fontStep: 2, keepAwake: true, ttsRate: 1, legacyImported: false, language: undefined, set: (patch) => set(patch) }),
+    (set) => ({ theme: 'system', fontStep: 2, keepAwake: true, ttsRate: 1, language: undefined, set: (patch) => set(patch) }),
     persistConfig<SettingsState>('settings'),
   ),
 );

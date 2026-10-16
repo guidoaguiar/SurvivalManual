@@ -94,6 +94,6 @@ it('falls back to default settings when the stored state is not an object', asyn
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
   kv.__map.set('settings', '{"state":"abc","version":1}');
   await useSettings.persist.rehydrate();
-  expect(useSettings.getState()).toMatchObject({ theme: 'system', fontStep: 2, keepAwake: true, ttsRate: 1, legacyImported: false });
+  expect(useSettings.getState()).toMatchObject({ theme: 'system', fontStep: 2, keepAwake: true, ttsRate: 1 });
   warn.mockRestore();
 });

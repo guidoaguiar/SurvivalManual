@@ -40,11 +40,6 @@ beforeEach(() => {
   useSettings.setState(useSettings.getInitialState(), true);
 });
 
-it('imports legacy prefs once hydration completes', async () => {
-  await launch();
-  expect(useSettings.getState().legacyImported).toBe(true);
-});
-
 it('returns from search to the chapter it redirected to', async () => {
   await launch();
   go(() => router.push('/search'));
