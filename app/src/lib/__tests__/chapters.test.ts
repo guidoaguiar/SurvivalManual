@@ -7,6 +7,7 @@ it('loads known chapters only', () => {
   expect(loadChapter('Alpha')?.slug).toBe('Alpha');
   expect(loadChapter('Nope')).toBeNull();
   expect(loadChapter(undefined)).toBeNull();
+  expect(loadChapter('constructor')).toBeNull();
 });
 
 it('titles from the toc, falling back to the slug', () => {
@@ -31,6 +32,8 @@ describe('resolveInitialBlock', () => {
   it('uses named anchors, ignoring unknown ones', () => {
     expect(resolveInitialBlock(alpha, { anchor: 'purify' }, null)).toBe(2);
     expect(resolveInitialBlock(alpha, { anchor: 'nope' }, null)).toBe(0);
+    expect(resolveInitialBlock(alpha, { anchor: 'constructor' }, null)).toBe(0);
+    expect(resolveInitialBlock(alpha, { anchor: '__proto__' }, null)).toBe(0);
   });
   it('restores the last position only for the same chapter and clamps stale indexes', () => {
     expect(resolveInitialBlock(alpha, {}, { slug: 'Alpha', blockIndex: 3 })).toBe(3);

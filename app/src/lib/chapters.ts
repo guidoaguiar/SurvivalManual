@@ -4,10 +4,11 @@ import type { LastPosition } from '@/store/reading';
 import { tocBySlug } from '@/toc';
 import type { Chapter } from '@/types/content';
 
+const has = (o: object, k: string) => Object.prototype.hasOwnProperty.call(o, k);
+
 export function loadChapter(slug: string | undefined): Chapter | null {
   if (!slug) return null;
-  const load = chapterLoaders[slug];
-  return load ? load() : null;
+  return has(chapterLoaders, slug) ? chapterLoaders[slug]() : null;
 }
 
 export function chapterTitle(slug: string, t: (key: string) => string): string {
@@ -29,7 +30,10 @@ export function resolveInitialBlock(chapter: Chapter, params: { block?: string; 
     const n = Number(params.block);
     if (n <= max) return n;
   }
-  if (params.anchor && chapter.anchors[params.anchor] !== undefined) return chapter.anchors[params.anchor];
+  if (params.anchor && has(chapter.anchors, params.anchor)) {
+    const a = chapter.anchors[params.anchor];
+    if (typeof a === 'number') return a;
+  }
   if (last?.slug === chapter.slug) return Math.max(0, Math.min(last.blockIndex, max));
   return 0;
 }
