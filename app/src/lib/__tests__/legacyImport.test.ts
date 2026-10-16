@@ -23,7 +23,7 @@ describe('mapLegacy', () => {
   it('keeps the last chapter only if it still exists', () => {
     const slug = (lastUrl: string) => mapLegacy({ nightMode: null, fontSize: null, lastUrl }).lastSlug;
     expect(slug('Water#fig5-3')).toBe('Water');
-    expect(slug('Weapons')).toBeUndefined();
+    expect(slug('NoSuchChapter')).toBeUndefined();
   });
   it('maps nothing when there is no legacy data', () => expect(mapLegacy(null)).toEqual({}));
 });
