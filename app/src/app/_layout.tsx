@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
 import { Drawer } from 'expo-router/drawer';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import i18n, { pickLanguage } from '@/i18n';
+import { importLegacyOnce } from '@/lib/legacyImport';
 import { registerServiceWorker } from '@/pwa/register';
 import { DrawerContent } from '@/components/DrawerContent';
 import { useHydrated } from '@/store/hydration';
@@ -24,7 +25,14 @@ export default function RootLayout() {
     registerServiceWorker();
   }, []);
 
-  if (!hydrated) return null;
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    if (!hydrated) return;
+    importLegacyOnce();
+    setReady(true);
+  }, [hydrated]);
+
+  if (!ready) return null;
 
   return (
     <GestureHandlerRootView style={styles.fill}>
