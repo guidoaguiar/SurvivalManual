@@ -1,5 +1,6 @@
 import { toc, tocBySlug, IGNORED_LINKS } from '@/toc';
 import en from '@/i18n/locales/en.json';
+import ptBR from '@/i18n/locales/pt-BR.json';
 
 it('has unique slugs', () => {
   expect(new Set(toc.map((e) => e.slug)).size).toBe(toc.length);
@@ -25,4 +26,13 @@ it('keeps the legacy order and grouping', () => {
   ]);
   expect(tocBySlug.get('TranslatorNotes')?.listed).toBe(false);
   expect(IGNORED_LINKS).toEqual(['LifeStraw', 'SolarUSBCharger', 'OHTMultiTool', 'Audible', 'CampStoveUSB', 'HandCrankUSB', 'CarUSBCharger', 'PandaDubLionsDen', 'TreadMultiTool']);
+});
+
+it('has every English interface string translated for pt-BR with the same placeholders', () => {
+  const placeholders = (s: string) => (s.match(/\{\{\w+\}\}/g) ?? []).sort();
+  for (const [key, value] of Object.entries(en)) {
+    expect(ptBR).toHaveProperty(key);
+    expect(placeholders((ptBR as Record<string, string>)[key])).toEqual(placeholders(value));
+  }
+  expect(ptBR.language_name).toBe('Português (Brasil)');
 });
