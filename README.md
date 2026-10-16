@@ -48,12 +48,7 @@ Pull requests are welcome, for both the app and the content. To improve a chapte
 
 The app's interface can be translated: menus, buttons, settings, tool screens and chapter titles. The chapter text itself comes from the wiki and is English only for now.
 
-Translations are plain JSON files in [`app/src/i18n/locales/`](app/src/i18n/locales), sent as a normal pull request. English is the reference:
-
-| File | Contains |
-|---|---|
-| `legacy.en.json` | Chapter titles and the original app's strings |
-| `en.json` | Strings for the newer features: search, bookmarks, checklists, emergency card, SOS, compass and so on |
+Each language is one JSON file in [`app/src/i18n/locales/`](app/src/i18n/locales), named after its language code (`en.json`, `fr.json`, …). Send changes as a normal pull request. [`en.json`](app/src/i18n/locales/en.json) is the reference and has every string.
 
 When translating:
 
@@ -61,12 +56,12 @@ When translating:
 - Keep placeholders such as `{{current}}`, `{{q}}` or `{{wpm}}` unchanged. They are filled in by the app.
 - Anything you leave out falls back to English, so a partial translation is fine.
 
-**Improving an existing language (French).** `legacy.fr.json` already covers the original strings. To translate the newer ones, create `fr.json` with the keys from `en.json`, then in [`app/src/i18n/index.ts`](app/src/i18n/index.ts) import it and change the French entry to `fr: { translation: { ...legacyFr, ...fr } }`.
+**Improving an existing language.** Open its file, e.g. `fr.json`, and add or fix entries. Any key from `en.json` that's missing there is untranslated: copy it over and translate the value. (French currently covers about a third of the strings.)
 
 **Adding a new language**, e.g. Portuguese (`pt`):
 
-1. Copy `legacy.en.json` to `legacy.pt.json` and `en.json` to `pt.json`, then translate the values.
-2. In [`app/src/i18n/index.ts`](app/src/i18n/index.ts), add `'pt'` to `languages`, import both files, and add `pt: { translation: { ...legacyPt, ...pt } }` to `resources`.
+1. Copy `en.json` to `pt.json` and translate the values.
+2. In [`app/src/i18n/index.ts`](app/src/i18n/index.ts), add `'pt'` to `languages`, import the file, and add `pt: { translation: pt }` to `resources`.
 3. In [`app/src/app/settings.tsx`](app/src/app/settings.tsx), add `['pt', 'Português']` to the language options.
 4. Check it: run `npm test` in `app/`, then `npm start`, open **Settings → Language** and pick your language.
 

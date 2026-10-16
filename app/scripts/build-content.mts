@@ -72,13 +72,13 @@ export function buildContent(i: BuildInput): { warnings: string[] } {
 
 function main() {
   const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-  const legacyEn: Record<string, string> = JSON.parse(readFileSync(join(root, 'src/i18n/locales/legacy.en.json'), 'utf8'));
+  const en: Record<string, string> = JSON.parse(readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8'));
   const { warnings } = buildContent({
     src: resolve(root, process.env.CONTENT_SRC ?? '../wiki'),
     out: join(root, 'src/content'),
     imgOut: join(root, 'assets/content'),
     slugs: toc.map((e) => e.slug),
-    titles: Object.fromEntries(toc.map((e) => [e.slug, legacyEn[e.titleKey] ?? e.slug])),
+    titles: Object.fromEntries(toc.map((e) => [e.slug, en[e.titleKey] ?? e.slug])),
     ignored: IGNORED_LINKS,
   });
   for (const w of warnings) console.warn(`warn: ${w}`);

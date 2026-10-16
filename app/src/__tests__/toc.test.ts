@@ -1,12 +1,12 @@
 import { toc, tocBySlug, IGNORED_LINKS } from '@/toc';
-import legacyEn from '@/i18n/locales/legacy.en.json';
+import en from '@/i18n/locales/en.json';
 
 it('has unique slugs', () => {
   expect(new Set(toc.map((e) => e.slug)).size).toBe(toc.length);
 });
 
 it('has an English title for every entry', () => {
-  for (const e of toc) expect(legacyEn).toHaveProperty(e.titleKey);
+  for (const e of toc) expect(en).toHaveProperty(e.titleKey);
 });
 
 it('keeps the legacy order and grouping', () => {

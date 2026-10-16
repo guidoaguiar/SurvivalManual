@@ -2,8 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { getLocales } from 'expo-localization';
 import en from './locales/en.json';
-import legacyEn from './locales/legacy.en.json';
-import legacyFr from './locales/legacy.fr.json';
+import fr from './locales/fr.json';
 
 export const languages = ['en', 'fr'] as const;
 export type Language = (typeof languages)[number];
@@ -15,8 +14,8 @@ export function pickLanguage(override?: string): Language {
 
 void i18n.use(initReactI18next).init({
   resources: {
-    en: { translation: { ...legacyEn, ...en } },
-    fr: { translation: legacyFr },
+    en: { translation: en },
+    fr: { translation: fr },
   },
   lng: pickLanguage(),
   fallbackLng: 'en',
