@@ -24,3 +24,5 @@ jest.mock('expo-keep-awake', () => ({
   deactivateKeepAwake: jest.fn(async () => {}),
   useKeepAwake: jest.fn(),
 }));
+
+import '@/i18n';
