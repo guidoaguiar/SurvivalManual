@@ -37,7 +37,7 @@ describe('resolveInitialBlock', () => {
   });
   it('restores the last position only for the same chapter and clamps stale indexes', () => {
     expect(resolveInitialBlock(alpha, {}, { slug: 'Alpha', blockIndex: 3 })).toBe(3);
-    expect(resolveInitialBlock(alpha, {}, { slug: 'Alpha', blockIndex: 500 })).toBe(5);
+    expect(resolveInitialBlock(alpha, {}, { slug: 'Alpha', blockIndex: 500 })).toBe(alpha.blocks.length - 1);
     expect(resolveInitialBlock(alpha, {}, { slug: 'Beta', blockIndex: 3 })).toBe(0);
   });
 });

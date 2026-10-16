@@ -39,6 +39,7 @@ export function Reader({ chapter, title, initialBlock, initialQuery }: Props) {
   const ttsRate = useSettings((s) => s.ttsRate);
   const listRef = useRef<FlatList<Block>>(null);
   const retried = useRef(-1);
+  const restored = useRef(initialBlock === 0);
   const [firstVisible, setFirstVisible] = useState(initialBlock);
   const [query, setQuery] = useState(initialQuery ?? '');
   const [findOpen, setFindOpen] = useState(!!initialQuery);
@@ -58,7 +59,11 @@ export function Reader({ chapter, title, initialBlock, initialQuery }: Props) {
   }, [chapter.slug]);
 
   useEffect(() => {
-    if (initialBlock > 0) requestAnimationFrame(() => scrollTo(initialBlock, false));
+    if (initialBlock > 0)
+      requestAnimationFrame(() => {
+        scrollTo(initialBlock, false);
+        restored.current = true;
+      });
   }, [initialBlock, scrollTo]);
 
   useEffect(() => {
@@ -72,18 +77,20 @@ export function Reader({ chapter, title, initialBlock, initialQuery }: Props) {
 
   useFocusEffect(
     useCallback(() => {
-      if (keepAwake) activateKeepAwakeAsync('reader').catch(() => {});
+      if (!keepAwake) return;
+      activateKeepAwakeAsync('reader').catch(() => {});
       return () => {
-        stop();
-        if (keepAwake) Promise.resolve(deactivateKeepAwake('reader')).catch(() => {});
+        Promise.resolve(deactivateKeepAwake('reader')).catch(() => {});
       };
-    }, [keepAwake, stop]),
+    }, [keepAwake]),
   );
+
+  useFocusEffect(useCallback(() => () => stop(), [stop]));
 
   // FlatList requires a stable callback; the Reader is keyed by chapter, so the slug is fixed.
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     const indexes = viewableItems.map((v) => v.index).filter((i): i is number => i != null);
-    if (!indexes.length) return;
+    if (!indexes.length || !restored.current) return;
     const first = Math.min(...indexes);
     setFirstVisible(first);
     useReading.getState().setLast(chapter.slug, first);

@@ -12,6 +12,7 @@ export const alpha: Chapter = {
     { type: 'paragraph', children: [{ type: 'link', href: '/chapter/Beta', children: [{ type: 'text', value: 'See Beta' }] }] },
     { type: 'image', src: 'a.png', alt: 'Figure 1' },
     p('More water tips.'),
+    { type: 'paragraph', children: [{ type: 'link', href: 'https://example.org', children: [{ type: 'text', value: 'Survival wiki' }] }] },
   ],
 };
 

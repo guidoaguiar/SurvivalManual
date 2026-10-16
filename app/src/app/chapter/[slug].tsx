@@ -19,8 +19,12 @@ export default function ChapterScreen() {
   const { t } = useTranslation();
   const params = useLocalSearchParams<{ slug: string; block?: string; anchor?: string; q?: string }>();
   const chapter = useMemo(() => loadChapter(params.slug), [params.slug]);
+  const initialBlock = useMemo(
+    () => (chapter ? resolveInitialBlock(chapter, params, useReading.getState().last) : 0),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [chapter, params.block, params.anchor],
+  );
   if (!chapter) return <NotFound />;
-  const initialBlock = resolveInitialBlock(chapter, params, useReading.getState().last);
   return (
     <Reader
       key={`${chapter.slug}|${params.q ?? ''}`}

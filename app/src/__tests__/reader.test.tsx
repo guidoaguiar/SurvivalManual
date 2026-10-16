@@ -1,10 +1,11 @@
-import { Text } from 'react-native';
+import { Linking, Text } from 'react-native';
 import { Stack } from 'expo-router';
 import { fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import * as Speech from 'expo-speech';
 import { activateKeepAwakeAsync } from 'expo-keep-awake';
 import ChapterScreen from '@/app/chapter/[slug]';
 import { useBookmarks } from '@/store/bookmarks';
+import { useSettings } from '@/store/settings';
 import { useReading } from '@/store/reading';
 
 jest.mock('@/content/chapters', () => require('@/test-utils/fixtures').chaptersModule);
@@ -21,6 +22,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   useReading.setState(useReading.getInitialState(), true);
   useBookmarks.setState(useBookmarks.getInitialState(), true);
+  useSettings.setState(useSettings.getInitialState(), true);
 });
 
 it('renders the chapter, records it as recent and keeps the screen awake', () => {
@@ -74,4 +76,38 @@ it('reads aloud from the current block', () => {
   fireEvent.press(screen.getByLabelText('Read aloud'));
   expect(Speech.speak).toHaveBeenCalledWith('Alpha intro', expect.anything());
   expect(screen.getByLabelText('Stop reading')).toBeVisible();
+});
+
+it('restores the last block, and a block param overrides it', () => {
+  useReading.setState({ last: { slug: 'Alpha', blockIndex: 2 } });
+  open('/chapter/Alpha');
+  fireEvent.press(screen.getByLabelText('Add bookmark'));
+  expect(useBookmarks.getState().items[0].id).toBe('Alpha#2');
+});
+
+it('prefers the block param over the last position', () => {
+  useReading.setState({ last: { slug: 'Alpha', blockIndex: 2 } });
+  open('/chapter/Alpha?block=4');
+  fireEvent.press(screen.getByLabelText('Add bookmark'));
+  expect(useBookmarks.getState().items[0].id).toBe('Alpha#4');
+});
+
+it('does not keep the screen awake when the setting is off', () => {
+  useSettings.setState({ keepAwake: false });
+  open('/chapter/Alpha');
+  expect(activateKeepAwakeAsync).not.toHaveBeenCalled();
+});
+
+it('stops reading when the screen loses focus', () => {
+  open('/chapter/Alpha');
+  fireEvent.press(screen.getByLabelText('Read aloud'));
+  fireEvent.press(screen.getByText('See Beta'));
+  expect(Speech.stop).toHaveBeenCalled();
+});
+
+it('opens external links with Linking', () => {
+  const spy = jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
+  open('/chapter/Alpha');
+  fireEvent.press(screen.getByText('Survival wiki'));
+  expect(spy).toHaveBeenCalledWith('https://example.org');
 });
