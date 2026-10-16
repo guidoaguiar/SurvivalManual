@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "Survival Manual",
+    "slug": "survival-manual",
+    "scheme": "survivalmanual",
+    "version": "6.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#455440"
+    },
+    "ios": {
+      "bundleIdentifier": "org.ligi.survivalmanual",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "org.ligi.survivalmanual",
+      "versionCode": 600
+    },
+    "web": {
+      "output": "static",
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-localization",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Used only to switch on the flashlight for SOS signals.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Used only to show true north on the compass."
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ]
+    ]
+  }
+}
