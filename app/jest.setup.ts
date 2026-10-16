@@ -25,4 +25,11 @@ jest.mock('expo-keep-awake', () => ({
   useKeepAwake: jest.fn(),
 }));
 
+// Icon fonts load async under jest and trigger act() warnings; treat them as loaded.
+jest.mock('expo-font', () => ({
+  ...jest.requireActual('expo-font'),
+  isLoaded: jest.fn(() => true),
+  loadAsync: jest.fn(async () => {}),
+}));
+
 import '@/i18n';
