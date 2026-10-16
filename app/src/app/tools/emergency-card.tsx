@@ -58,6 +58,7 @@ function RescuerView({ card, onClose }: { card: EmergencyCard; onClose: () => vo
   useKeepAwake('rescuer');
   const { t } = useTranslation();
   const rows = FIELDS.filter(([key]) => card[key].trim());
+  const contacts = card.contacts.filter((c) => c.name.trim() || c.phone.trim());
   return (
     <ScrollView style={styles.rescuer} contentContainerStyle={styles.content}>
       <Text style={styles.rescuerTitle}>{t('ec_rescuer_title')}</Text>
@@ -67,10 +68,14 @@ function RescuerView({ card, onClose }: { card: EmergencyCard; onClose: () => vo
           <Text style={styles.rescuerValue}>{card[key]}</Text>
         </View>
       ))}
-      {card.contacts
-        .filter((c) => c.name.trim() || c.phone.trim())
+      {contacts.length > 0 && (
+        <Text accessibilityRole="header" style={styles.rescuerLabel}>
+          {t('ec_contacts')}
+        </Text>
+      )}
+      {contacts
         .map((c, i) => (
-          <Text key={i} style={styles.rescuerValue} onPress={c.phone ? () => Linking.openURL(`tel:${c.phone.replace(/\s/g, '')}`) : undefined}>
+          <Text key={i} style={styles.rescuerValue} accessibilityRole={c.phone.trim() ? 'link' : undefined} onPress={c.phone ? () => Linking.openURL(`tel:${c.phone.replace(/\s/g, '')}`) : undefined}>
             {`${c.name} ${c.phone}`.trim()}
           </Text>
         ))}
