@@ -18,7 +18,7 @@ export default function ImageScreen() {
   const colors = useColors();
   const { name } = useLocalSearchParams<{ name: string }>();
   const asset = name && Object.prototype.hasOwnProperty.call(images, name) ? images[name] : undefined;
-  const close = useCallback(() => <IconButton icon="close" label={t('close')} color={colors.onPrimary} onPress={() => goBack('/')} />, [t, colors.onPrimary]);
+  const close = useCallback(() => <IconButton icon="close" label={t('close')} color={colors.onPrimary} onPress={() => goBack()} />, [t, colors.onPrimary]);
   useTitle(name ?? '', close);
   if (!asset) return <NotFound message={t('image_not_found')} />;
   return <ZoomableImage asset={asset} alt={name} />;

@@ -100,14 +100,55 @@ it('"Back to contents" on a missing chapter lands on a chapter without exiting',
   expect(exit).not.toHaveBeenCalled();
 });
 
-it('the goBack fallback to / after launch lands on a chapter without exiting', async () => {
+it('the goBack fallback after launch lands on a chapter without exiting', async () => {
   const exit = onAndroid();
   await launch();
   go(() => router.push('/search'));
-  jest.spyOn(router, 'canGoBack').mockReturnValue(false);
-  go(() => goBack('/'));
+  jest.spyOn(router, 'canGoBack').mockReturnValueOnce(false);
+  go(() => goBack());
   expect(screen).toHavePathname('/chapter/Introduction');
   expect(exit).not.toHaveBeenCalled();
+});
+
+// Android hardware Back: react-navigation handles it while it can go back; otherwise RN's
+// BackHandler falls through to exitApp(). Presses until the app exits; also records whether the
+// navigator was at its root (canGoBack() false) when exitApp ran.
+function backUntilExit(exit: jest.SpyInstance, max = 6) {
+  let atRoot = false;
+  exit.mockImplementation(() => {
+    atRoot = !router.canGoBack();
+  });
+  for (let i = 1; i <= max; i++) {
+    if (router.canGoBack()) go(() => router.back());
+    else BackHandler.exitApp();
+    if (exit.mock.calls.length > 0) return { presses: i, atRoot };
+  }
+  return { presses: Infinity, atRoot };
+}
+
+it('Back still leaves the app after "Back to contents" reached from search', async () => {
+  const exit = onAndroid();
+  await launch();
+  go(() => router.push('/search'));
+  go(() => router.push('/chapter/Nope'));
+  fireEvent.press(screen.getByText('Back to contents'));
+  expect(screen).toHavePathname('/chapter/Introduction');
+  const { presses, atRoot } = backUntilExit(exit);
+  expect(presses).toBeLessThanOrEqual(3);
+  expect(atRoot).toBe(true);
+  expect(screen).toHavePathname('/chapter/Introduction');
+});
+
+it('Back leaves the app after a goBack fallback from a deep-linked first screen', async () => {
+  const exit = onAndroid();
+  renderRouter(routes, { initialUrl: '/search' });
+  await waitFor(() => expect(screen).toHavePathname('/search'));
+  expect(router.canGoBack()).toBe(false);
+  go(() => goBack());
+  expect(screen).toHavePathname('/chapter/Introduction');
+  const { presses, atRoot } = backUntilExit(exit);
+  expect(presses).toBeLessThanOrEqual(2);
+  expect(atRoot).toBe(true);
 });
 
 it('redirects again instead of exiting on other platforms', async () => {

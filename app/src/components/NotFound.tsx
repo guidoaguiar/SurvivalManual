@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { lastChapterHref } from '@/lib/nav';
 import { useColors } from '@/theme';
 import { Button } from './Button';
 
@@ -10,7 +11,7 @@ export function NotFound({ message }: { message?: string }) {
   return (
     <View style={styles.box}>
       <Text style={[styles.text, { color: colors.text }]}>{message ?? t('chapter_not_found')}</Text>
-      <Button label={t('back_to_contents')} onPress={() => router.replace('/')} />
+      <Button label={t('back_to_contents')} onPress={() => router.replace(lastChapterHref())} />
     </View>
   );
 }
