@@ -64,6 +64,7 @@
     "test": "jest",
     "test:content": "tsx --test scripts/content/*.test.mts",
     "content": "tsx scripts/build-content.mts",
+    "export:web": "npm run content && expo export -p web && node scripts/pwa.mjs",
     "prestart": "npm run content",
     "preweb": "npm run content",
     "preandroid": "npm run content",

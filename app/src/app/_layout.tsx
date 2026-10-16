@@ -4,6 +4,7 @@ import { Drawer } from 'expo-router/drawer';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import i18n, { pickLanguage } from '@/i18n';
+import { registerServiceWorker } from '@/pwa/register';
 import { DrawerContent } from '@/components/DrawerContent';
 import { useHydrated } from '@/store/hydration';
 import { useSettings } from '@/store/settings';
@@ -18,6 +19,10 @@ export default function RootLayout() {
   useEffect(() => {
     void i18n.changeLanguage(pickLanguage(language));
   }, [language]);
+
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
 
   if (!hydrated) return null;
 
