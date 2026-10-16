@@ -18,5 +18,21 @@ export const alpha: Chapter = {
 
 export const beta: Chapter = { slug: 'Beta', anchors: {}, blocks: [{ type: 'heading', depth: 1, children: [{ type: 'text', value: 'Beta' }] }, p('Fire basics.')] };
 
-export const chaptersModule = { chapterLoaders: { Alpha: () => alpha, Beta: () => beta } };
+export const alphaPt: Chapter = {
+  slug: 'Alpha',
+  anchors: { 'introducao-alfa': 0, fig1: 2 },
+  blocks: [
+    { type: 'heading', depth: 1, anchor: 'introducao-alfa', children: [{ type: 'text', value: 'Introdução alfa' }] },
+    p('Água limpa é vital. Ferva a água primeiro.'),
+    { type: 'image', src: 'a.png', alt: 'Figura 1' },
+  ],
+};
+
+export const chaptersModule = {
+  chapterLoaders: {
+    en: { Alpha: () => alpha, Beta: () => beta },
+    'pt-BR': { Alpha: () => alphaPt, Beta: () => beta },
+  },
+};
+
 export const imagesModule = { images: { 'a.png': { source: 1, width: 200, height: 100 } } };

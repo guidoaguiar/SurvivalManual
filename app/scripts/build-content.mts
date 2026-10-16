@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import MiniSearch from 'minisearch';
@@ -10,50 +10,115 @@ import { indexOptions } from '../src/search/options';
 import { IGNORED_LINKS, toc } from '../src/toc';
 import type { SearchDoc } from '../src/types/content';
 
-export type BuildInput = { src: string; out: string; imgOut: string; slugs: string[]; titles: Record<string, string>; ignored: string[] };
+export type BuildInput = {
+  src: string;
+  out: string;
+  imgOut: string;
+  slugs: string[];
+  titles: Record<string, Record<string, string>>;
+  ignored: string[];
+  localesDir?: string;
+};
 
 const SCHEME = /^[a-z][a-z0-9+.-]*:/i;
+const LANG = /^[a-z]{2,3}(-[A-Z]{2})?$/;
 const posix = (p: string) => p.split(sep).join('/');
 const req = (from: string, to: string) => {
   const r = posix(relative(from, to));
   return JSON.stringify(r.startsWith('.') ? r : `./${r}`);
 };
+const figAnchors = (c: Converted) => Object.keys(c.chapter.anchors).filter((a) => a.startsWith('fig'));
 
-export function buildContent(i: BuildInput): { warnings: string[] } {
+export function findLanguages(src: string): string[] {
+  return readdirSync(src, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && LANG.test(d.name) && readdirSync(join(src, d.name)).some((f) => f.endsWith('.md')))
+    .map((d) => d.name)
+    .sort();
+}
+
+export function buildContent(i: BuildInput): { warnings: string[]; languages: string[] } {
   const errors: string[] = [];
-  const converted = new Map<string, Converted>();
+  const warnings: string[] = [];
   const opts = { ignored: new Set(i.ignored) };
+  const exists = (name: string) => existsSync(join(i.src, name));
+
+  const english = new Map<string, Converted>();
   for (const slug of i.slugs) {
     const file = join(i.src, `${slug}.md`);
     if (!existsSync(file)) {
       errors.push(`${slug}: missing markdown file ${file}`);
       continue;
     }
-    converted.set(slug, convertMarkdown(slug, readFileSync(file, 'utf8'), opts));
+    english.set(slug, convertMarkdown(slug, readFileSync(file, 'utf8'), opts));
   }
-  const checked = validate(converted, (name) => existsSync(join(i.src, name)));
-  errors.push(...checked.errors);
+  const enChecked = validate(english, exists);
+  errors.push(...enChecked.errors);
+  warnings.push(...enChecked.warnings);
+
+  const extra = findLanguages(i.src);
+  const perLang = new Map<string, Map<string, Converted>>([['en', english]]);
+  const translated: Record<string, string[]> = {};
+  for (const lang of extra) {
+    const merged = new Map(english);
+    const own = new Set<string>();
+    for (const slug of i.slugs) {
+      const file = join(i.src, lang, `${slug}.md`);
+      if (!existsSync(file)) continue;
+      const c = convertMarkdown(slug, readFileSync(file, 'utf8'), opts);
+      merged.set(slug, c);
+      own.add(slug);
+      const source = english.get(slug);
+      const dropped = source ? figAnchors(source).filter((a) => !Object.prototype.hasOwnProperty.call(c.chapter.anchors, a)) : [];
+      if (dropped.length) warnings.push(`${lang}/${slug}: missing figure anchors present in English: ${dropped.join(', ')}`);
+    }
+    const checked = validate(merged, exists, own);
+    errors.push(...checked.errors.map((m) => `${lang}/${m}`));
+    warnings.push(...checked.warnings.map((m) => `${lang}/${m}`));
+    perLang.set(lang, merged);
+    translated[lang] = [...own].sort();
+  }
   if (errors.length) throw new Error(`content build failed:\n${errors.join('\n')}`);
 
   rmSync(i.out, { recursive: true, force: true });
   rmSync(i.imgOut, { recursive: true, force: true });
-  mkdirSync(join(i.out, 'chapters'), { recursive: true });
   mkdirSync(i.imgOut, { recursive: true });
 
-  const index = new MiniSearch<SearchDoc>(indexOptions);
+  const languages = ['en', ...extra];
   const imageNames = new Set<string>();
-  for (const [slug, c] of converted) {
-    writeFileSync(join(i.out, 'chapters', `${slug}.json`), JSON.stringify(c.chapter));
-    index.addAll(sectionsOf(c.chapter, i.titles[slug] ?? slug));
-    for (const img of c.images) if (!SCHEME.test(img)) imageNames.add(img);
+  const loaderBlocks: string[] = [];
+  const indexLines: string[] = [];
+  for (const lang of languages) {
+    const chapters = perLang.get(lang)!;
+    const own = lang === 'en' ? new Set(chapters.keys()) : new Set(translated[lang]);
+    mkdirSync(join(i.out, lang, 'chapters'), { recursive: true });
+    const index = new MiniSearch<SearchDoc>(indexOptions);
+    const loaders: string[] = [];
+    for (const [slug, c] of chapters) {
+      const fileLang = own.has(slug) ? lang : 'en';
+      if (fileLang === lang) writeFileSync(join(i.out, lang, 'chapters', `${slug}.json`), JSON.stringify(c.chapter));
+      loaders.push(`    ${JSON.stringify(slug)}: () => require(${JSON.stringify(`./${fileLang}/chapters/${slug}.json`)}),`);
+      index.addAll(sectionsOf(c.chapter, i.titles[lang]?.[slug] ?? i.titles.en?.[slug] ?? slug));
+      for (const img of c.images) if (!SCHEME.test(img)) imageNames.add(img);
+    }
+    writeFileSync(join(i.out, lang, 'search-index.json'), JSON.stringify(index));
+    loaderBlocks.push(`  ${JSON.stringify(lang)}: {\n${loaders.join('\n')}\n  },`);
+    indexLines.push(`  ${JSON.stringify(lang)}: () => require(${JSON.stringify(`./${lang}/search-index.json`)}),`);
   }
-  writeFileSync(join(i.out, 'search-index.json'), JSON.stringify(index));
 
-  const loaders = [...converted.keys()].map((slug) => `  ${JSON.stringify(slug)}: () => require(${JSON.stringify(`./chapters/${slug}.json`)}),`);
+  const header = '// generated by scripts/build-content.mts\n';
   writeFileSync(
     join(i.out, 'chapters.ts'),
-    `// generated by scripts/build-content.mts\nimport type { Chapter } from '@/types/content';\n\nexport const chapterLoaders: Record<string, () => Chapter> = {\n${loaders.join('\n')}\n};\n`,
+    `${header}import type { Chapter } from '@/types/content';\n\nexport const chapterLoaders: Record<string, Record<string, () => Chapter>> = {\n${loaderBlocks.join('\n')}\n};\n`,
   );
+  writeFileSync(join(i.out, 'search-indexes.ts'), `${header}export const searchIndexes: Record<string, () => unknown> = {\n${indexLines.join('\n')}\n};\n`);
+  writeFileSync(
+    join(i.out, 'manifest.ts'),
+    `${header}export const contentLanguages: string[] = ${JSON.stringify(languages)};\nexport const translated: Record<string, string[]> = ${JSON.stringify(translated)};\n`,
+  );
+
+  const localeFiles = i.localesDir && existsSync(i.localesDir) ? readdirSync(i.localesDir).filter((f) => f.endsWith('.json')).sort() : [];
+  const localeLines = localeFiles.map((f) => `  ${JSON.stringify(f.replace(/\.json$/, ''))}: require(${req(i.out, join(i.localesDir!, f))}),`);
+  writeFileSync(join(i.out, 'locales.ts'), `${header}export const locales: Record<string, Record<string, string>> = {\n${localeLines.join('\n')}\n};\n`);
 
   const imageLines = [...imageNames].sort().map((name) => {
     const from = join(i.src, name);
@@ -65,24 +130,35 @@ export function buildContent(i: BuildInput): { warnings: string[] } {
   });
   writeFileSync(
     join(i.out, 'images.ts'),
-    `// generated by scripts/build-content.mts\nimport type { ImageAsset } from '@/types/content';\n\nexport const images: Record<string, ImageAsset> = {\n${imageLines.join('\n')}\n};\n`,
+    `${header}import type { ImageAsset } from '@/types/content';\n\nexport const images: Record<string, ImageAsset> = {\n${imageLines.join('\n')}\n};\n`,
   );
-  return { warnings: checked.warnings };
+  return { warnings, languages };
 }
 
 function main() {
   const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-  const en: Record<string, string> = JSON.parse(readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8'));
-  const { warnings } = buildContent({
-    src: resolve(root, process.env.CONTENT_SRC ?? '../wiki'),
+  const localesDir = join(root, 'src/i18n/locales');
+  const readLocale = (lang: string): Record<string, string> => {
+    const f = join(localesDir, `${lang}.json`);
+    return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : {};
+  };
+  const src = resolve(root, process.env.CONTENT_SRC ?? '../wiki');
+  const titles: Record<string, Record<string, string>> = {};
+  for (const lang of ['en', ...findLanguages(src)]) {
+    const strings = readLocale(lang);
+    titles[lang] = Object.fromEntries(toc.map((e) => [e.slug, strings[e.titleKey] ?? '']).filter(([, v]) => v));
+  }
+  const { warnings, languages } = buildContent({
+    src,
     out: join(root, 'src/content'),
     imgOut: join(root, 'assets/content'),
     slugs: toc.map((e) => e.slug),
-    titles: Object.fromEntries(toc.map((e) => [e.slug, en[e.titleKey] ?? e.slug])),
+    titles,
     ignored: IGNORED_LINKS,
+    localesDir,
   });
   for (const w of warnings) console.warn(`warn: ${w}`);
-  console.log(`content: built ${toc.length} chapters`);
+  console.log(`content: built ${toc.length} chapters in ${languages.join(', ')}`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

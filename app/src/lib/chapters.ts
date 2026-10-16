@@ -6,9 +6,10 @@ import type { Chapter } from '@/types/content';
 
 const has = (o: object, k: string) => Object.prototype.hasOwnProperty.call(o, k);
 
-export function loadChapter(slug: string | undefined): Chapter | null {
+export function loadChapter(slug: string | undefined, lang = 'en'): Chapter | null {
   if (!slug) return null;
-  return has(chapterLoaders, slug) ? chapterLoaders[slug]() : null;
+  const set = has(chapterLoaders, lang) ? chapterLoaders[lang] : chapterLoaders.en;
+  return has(set, slug) ? set[slug]() : null;
 }
 
 export function chapterTitle(slug: string, t: (key: string) => string): string {

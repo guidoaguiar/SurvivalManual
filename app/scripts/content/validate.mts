@@ -2,10 +2,11 @@ import type { Converted } from './convert.mjs';
 
 const SCHEME = /^[a-z][a-z0-9+.-]*:/i;
 
-export function validate(converted: Map<string, Converted>, fileExists: (name: string) => boolean) {
+export function validate(converted: Map<string, Converted>, fileExists: (name: string) => boolean, only?: Set<string>) {
   const errors: string[] = [];
   const warnings: string[] = [];
   for (const [slug, c] of converted) {
+    if (only && !only.has(slug)) continue;
     for (const img of c.images) {
       if (!SCHEME.test(img) && !fileExists(img)) errors.push(`${slug}: missing image "${img}"`);
     }

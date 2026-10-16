@@ -1,4 +1,5 @@
 import MiniSearch from 'minisearch';
+import { searchIndexes } from '@/content/search-indexes';
 import type { SearchDoc } from '@/types/content';
 import { excerpt, queryTerms } from './highlight';
 import { indexOptions, queryOptions } from './options';
@@ -6,11 +7,16 @@ import { indexOptions, queryOptions } from './options';
 export type SectionHit = { slug: string; block: number; heading: string; excerpt: string };
 export type ChapterHits = { slug: string; sections: SectionHit[] };
 
-let cached: MiniSearch<SearchDoc> | undefined;
+const cache = new Map<string, MiniSearch<SearchDoc>>();
 
-export function loadIndex(): MiniSearch<SearchDoc> {
-  cached ??= MiniSearch.loadJSON<SearchDoc>(JSON.stringify(require('@/content/search-index.json')), indexOptions);
-  return cached;
+export function loadIndex(lang = 'en'): MiniSearch<SearchDoc> {
+  const key = Object.prototype.hasOwnProperty.call(searchIndexes, lang) ? lang : 'en';
+  let idx = cache.get(key);
+  if (!idx) {
+    idx = MiniSearch.loadJSON<SearchDoc>(JSON.stringify(searchIndexes[key]()), indexOptions);
+    cache.set(key, idx);
+  }
+  return idx;
 }
 
 export function searchManual(q: string, index?: MiniSearch<SearchDoc>): ChapterHits[] {
