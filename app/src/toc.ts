@@ -44,4 +44,4 @@ export const toc: TocEntry[] = [
 export const tocBySlug = new Map(toc.map((e) => [e.slug, e]));
 
 // Affiliate pages linked from the wiki that don't exist as wiki pages; rendered as plain text.
-export const IGNORED_LINKS = ['LifeStraw', 'SolarUSBCharger', 'OHTMultiTool'];
+export const IGNORED_LINKS = ['LifeStraw', 'SolarUSBCharger', 'OHTMultiTool', 'Audible', 'CampStoveUSB', 'HandCrankUSB', 'CarUSBCharger', 'PandaDubLionsDen', 'TreadMultiTool'];

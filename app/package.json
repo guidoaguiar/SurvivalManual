@@ -62,7 +62,14 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "test:content": "tsx --test scripts/content/*.test.mts"
+    "test:content": "tsx --test scripts/content/*.test.mts",
+    "content": "tsx scripts/build-content.mts",
+    "prestart": "npm run content",
+    "preweb": "npm run content",
+    "preandroid": "npm run content",
+    "preios": "npm run content",
+    "pretest": "npm run content",
+    "pretypecheck": "npm run content"
   },
   "private": true,
   "jest": {

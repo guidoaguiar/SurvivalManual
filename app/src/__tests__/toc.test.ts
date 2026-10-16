@@ -14,5 +14,5 @@ it('keeps the legacy order and grouping', () => {
   expect(toc.filter((e) => !e.appendix && e.listed !== false)).toHaveLength(28);
   expect(toc.filter((e) => e.appendix).map((e) => e.slug)).toEqual(['MultiTool', 'DangerousArthropods', 'FishAndMollusks', 'RopesAndKnots', 'FAQ']);
   expect(tocBySlug.get('TranslatorNotes')?.listed).toBe(false);
-  expect(IGNORED_LINKS).toEqual(['LifeStraw', 'SolarUSBCharger', 'OHTMultiTool']);
+  expect(IGNORED_LINKS).toEqual(['LifeStraw', 'SolarUSBCharger', 'OHTMultiTool', 'Audible', 'CampStoveUSB', 'HandCrankUSB', 'CarUSBCharger', 'PandaDubLionsDen', 'TreadMultiTool']);
 });
