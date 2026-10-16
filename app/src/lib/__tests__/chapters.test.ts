@@ -41,3 +41,10 @@ describe('resolveInitialBlock', () => {
     expect(resolveInitialBlock(alpha, {}, { slug: 'Beta', blockIndex: 3 })).toBe(0);
   });
 });
+
+it('loads the translation for the given language and falls back to English', () => {
+  expect(loadChapter('Alpha', 'pt-BR')?.blocks[0]).toMatchObject({ children: [{ value: 'Introdução alfa' }] });
+  expect(loadChapter('Beta', 'pt-BR')?.slug).toBe('Beta');
+  expect(loadChapter('Alpha', 'xx')?.blocks[0]).toMatchObject({ children: [{ value: 'Alpha intro' }] });
+  expect(loadChapter('constructor', 'pt-BR')).toBeNull();
+});

@@ -1,6 +1,6 @@
 import { Linking, Text } from 'react-native';
 import { Stack } from 'expo-router';
-import { fireEvent, renderRouter, screen } from 'expo-router/testing-library';
+import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import * as Speech from 'expo-speech';
 import { activateKeepAwakeAsync } from 'expo-keep-awake';
 import ChapterScreen from '@/app/chapter/[slug]';
@@ -110,4 +110,14 @@ it('opens external links with Linking', () => {
   open('/chapter/Alpha');
   fireEvent.press(screen.getByText('Survival wiki'));
   expect(spy).toHaveBeenCalledWith('https://example.org');
+});
+
+it('shows the chapter in the selected language and switches live', async () => {
+  const i18n = require('@/i18n').default;
+  open('/chapter/Alpha');
+  expect(screen.getByText('Alpha intro')).toBeVisible();
+  await act(() => i18n.changeLanguage('pt-BR'));
+  expect(screen.getByText('Introdução alfa')).toBeVisible();
+  await act(() => i18n.changeLanguage('en'));
+  expect(screen.getByText('Alpha intro')).toBeVisible();
 });

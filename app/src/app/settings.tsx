@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Choices } from '@/components/Choices';
 import { useTitle } from '@/lib/useTitle';
+import { languageName, languages } from '@/i18n';
 import { fontSize, useSettings, type ThemeMode } from '@/store/settings';
 import { useColors } from '@/theme';
 
@@ -40,7 +41,7 @@ export default function SettingsScreen() {
       {label(t('language'))}
       <Choices<string>
         value={s.language ?? 'system'}
-        options={[['system', t('language_system')], ['en', 'English'], ['fr', 'Français']]}
+        options={[['system', t('language_system')], ...languages.map((l): [string, string] => [l, languageName(l)])]}
         onChange={(v) => s.set({ language: v === 'system' ? undefined : v })}
       />
     </ScrollView>

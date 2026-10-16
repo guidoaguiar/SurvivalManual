@@ -16,9 +16,9 @@ export function ErrorBoundary(_: ErrorBoundaryProps) {
 }
 
 export default function ChapterScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const params = useLocalSearchParams<{ slug: string; block?: string; anchor?: string; q?: string }>();
-  const chapter = useMemo(() => loadChapter(params.slug), [params.slug]);
+  const chapter = useMemo(() => loadChapter(params.slug, i18n.language), [params.slug, i18n.language]);
   const initialBlock = useMemo(
     () => (chapter ? resolveInitialBlock(chapter, params, useReading.getState().last) : 0),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -27,7 +27,7 @@ export default function ChapterScreen() {
   if (!chapter) return <NotFound />;
   return (
     <Reader
-      key={`${chapter.slug}|${params.q ?? ''}`}
+      key={`${i18n.language}|${chapter.slug}|${params.q ?? ''}`}
       chapter={chapter}
       title={chapterTitle(chapter.slug, t)}
       initialBlock={initialBlock}

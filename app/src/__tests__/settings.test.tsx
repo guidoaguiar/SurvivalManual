@@ -9,6 +9,7 @@ beforeEach(() => useSettings.setState(useSettings.getInitialState(), true));
 
 it('changes theme, font size, keep-awake, reading speed and language', () => {
   renderRouter(routes, { initialUrl: '/settings' });
+  expect(screen.getByRole('radio', { name: 'English' })).toBeTruthy();
   fireEvent.press(screen.getByRole('radio', { name: 'True black (AMOLED)' }));
   fireEvent.press(screen.getByRole('radio', { name: 'Large' }));
   fireEvent(screen.getByRole('switch'), 'valueChange', false);

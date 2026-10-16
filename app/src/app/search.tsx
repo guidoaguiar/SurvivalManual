@@ -6,19 +6,19 @@ import { Empty } from '@/components/Empty';
 import { chapterTitle } from '@/lib/chapters';
 import { useTitle } from '@/lib/useTitle';
 import { queryTerms, splitHighlights } from '@/search/highlight';
-import { searchManual } from '@/search/search';
+import { loadIndex, searchManual } from '@/search/search';
 import { useColors } from '@/theme';
 
 export default function SearchScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const colors = useColors();
   useTitle(t('search'));
   const [q, setQ] = useState('');
   const query = useDeferredValue(q);
   const terms = useMemo(() => queryTerms(query), [query]);
   const sections = useMemo(
-    () => searchManual(query).map((g, gi) => ({ title: chapterTitle(g.slug, t), gi, data: g.sections })),
-    [query, t],
+    () => searchManual(query, loadIndex(i18n.language)).map((g, gi) => ({ title: chapterTitle(g.slug, t), gi, data: g.sections })),
+    [query, t, i18n.language],
   );
 
   return (

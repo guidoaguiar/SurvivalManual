@@ -1,4 +1,5 @@
 import { chapterLoaders } from '@/content/chapters';
+import { currentLanguage } from '@/i18n';
 import { blockText } from '@/lib/blockText';
 import type { LastPosition } from '@/store/reading';
 import { tocBySlug } from '@/toc';
@@ -6,7 +7,7 @@ import type { Chapter } from '@/types/content';
 
 const has = (o: object, k: string) => Object.prototype.hasOwnProperty.call(o, k);
 
-export function loadChapter(slug: string | undefined, lang = 'en'): Chapter | null {
+export function loadChapter(slug: string | undefined, lang = currentLanguage()): Chapter | null {
   if (!slug) return null;
   const set = has(chapterLoaders, lang) ? chapterLoaders[lang] : chapterLoaders.en;
   return has(set, slug) ? set[slug]() : null;

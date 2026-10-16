@@ -1,22 +1,45 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { getLocales } from 'expo-localization';
-import en from './locales/en.json';
-import fr from './locales/fr.json';
+import { contentLanguages } from '@/content/manifest';
+import { locales } from '@/content/locales';
 
-export const languages = ['en', 'fr'] as const;
-export type Language = (typeof languages)[number];
+const has = (o: object, k: string) => Object.prototype.hasOwnProperty.call(o, k);
 
-export function pickLanguage(override?: string): Language {
-  const tag = override ?? getLocales()[0]?.languageCode ?? 'en';
-  return (languages as readonly string[]).includes(tag) ? (tag as Language) : 'en';
+export const languages: string[] = [...new Set([...Object.keys(locales), ...contentLanguages])].sort((a, b) =>
+  a === 'en' ? -1 : b === 'en' ? 1 : a.localeCompare(b),
+);
+
+type Device = { languageTag?: string | null; languageCode?: string | null };
+
+function match(candidate: string): string | undefined {
+  const norm = candidate.replace('_', '-').toLowerCase();
+  const exact = languages.find((l) => l.toLowerCase() === norm);
+  if (exact) return exact;
+  const base = norm.split('-')[0];
+  return languages.find((l) => l.toLowerCase().split('-')[0] === base);
+}
+
+export function pickLanguage(override?: string, device: Device = getLocales()[0] ?? {}): string {
+  if (override) return languages.find((l) => l.toLowerCase() === override.toLowerCase()) ?? 'en';
+  for (const c of [device.languageTag, device.languageCode]) {
+    if (!c) continue;
+    const hit = match(c);
+    if (hit) return hit;
+  }
+  return 'en';
+}
+
+export function languageName(lang: string): string {
+  return has(locales, lang) && locales[lang].language_name ? locales[lang].language_name : lang;
+}
+
+export function currentLanguage(): string {
+  return i18n.language || 'en';
 }
 
 void i18n.use(initReactI18next).init({
-  resources: {
-    en: { translation: en },
-    fr: { translation: fr },
-  },
+  resources: Object.fromEntries(Object.entries(locales).map(([lang, translation]) => [lang, { translation }])),
   lng: pickLanguage(),
   fallbackLng: 'en',
   interpolation: { escapeValue: false },

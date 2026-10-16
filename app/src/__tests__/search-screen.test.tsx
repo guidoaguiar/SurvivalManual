@@ -4,7 +4,7 @@ import { fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import SearchScreen from '@/app/search';
 import { searchManual } from '@/search/search';
 
-jest.mock('@/search/search', () => ({ searchManual: jest.fn() }));
+jest.mock('@/search/search', () => ({ searchManual: jest.fn(), loadIndex: jest.fn() }));
 const mocked = searchManual as jest.Mock;
 
 const routes = { _layout: () => <Stack />, search: SearchScreen, 'chapter/[slug]': () => <Text>chapter</Text> };

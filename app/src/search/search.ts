@@ -1,5 +1,6 @@
 import MiniSearch from 'minisearch';
 import { searchIndexes } from '@/content/search-indexes';
+import { currentLanguage } from '@/i18n';
 import type { SearchDoc } from '@/types/content';
 import { excerpt, queryTerms } from './highlight';
 import { indexOptions, queryOptions } from './options';
@@ -9,7 +10,7 @@ export type ChapterHits = { slug: string; sections: SectionHit[] };
 
 const cache = new Map<string, MiniSearch<SearchDoc>>();
 
-export function loadIndex(lang = 'en'): MiniSearch<SearchDoc> {
+export function loadIndex(lang = currentLanguage()): MiniSearch<SearchDoc> {
   const key = Object.prototype.hasOwnProperty.call(searchIndexes, lang) ? lang : 'en';
   let idx = cache.get(key);
   if (!idx) {
