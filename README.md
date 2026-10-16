@@ -42,7 +42,35 @@ For each release, bump `version` and `android.versionCode` in `app/app.json`.
 
 ## Contributing
 
-Pull requests are welcome, for both the app and the content. To improve a chapter, edit the [wiki](https://github.com/guidoaguiar/SurvivalManual/wiki). To add or fix a translation, edit the files in `app/src/i18n/locales/`.
+Pull requests are welcome, for both the app and the content. To improve a chapter, edit the [wiki](https://github.com/guidoaguiar/SurvivalManual/wiki).
+
+### Translating
+
+The app's interface can be translated: menus, buttons, settings, tool screens and chapter titles. The chapter text itself comes from the wiki and is English only for now.
+
+Translations are plain JSON files in [`app/src/i18n/locales/`](app/src/i18n/locales), sent as a normal pull request. English is the reference:
+
+| File | Contains |
+|---|---|
+| `legacy.en.json` | Chapter titles and the original app's strings |
+| `en.json` | Strings for the newer features: search, bookmarks, checklists, emergency card, SOS, compass and so on |
+
+When translating:
+
+- Only change the **values**. Keep every key (the part before the `:`) exactly as it is.
+- Keep placeholders such as `{{current}}`, `{{q}}` or `{{wpm}}` unchanged. They are filled in by the app.
+- Anything you leave out falls back to English, so a partial translation is fine.
+
+**Improving an existing language (French).** `legacy.fr.json` already covers the original strings. To translate the newer ones, create `fr.json` with the keys from `en.json`, then in [`app/src/i18n/index.ts`](app/src/i18n/index.ts) import it and change the French entry to `fr: { translation: { ...legacyFr, ...fr } }`.
+
+**Adding a new language**, e.g. Portuguese (`pt`):
+
+1. Copy `legacy.en.json` to `legacy.pt.json` and `en.json` to `pt.json`, then translate the values.
+2. In [`app/src/i18n/index.ts`](app/src/i18n/index.ts), add `'pt'` to `languages`, import both files, and add `pt: { translation: { ...legacyPt, ...pt } }` to `resources`.
+3. In [`app/src/app/settings.tsx`](app/src/app/settings.tsx), add `['pt', 'Português']` to the language options.
+4. Check it: run `npm test` in `app/`, then `npm start`, open **Settings → Language** and pick your language.
+
+You don't need to be a developer to help. If editing code is not for you, open an issue with your translated JSON file attached and we'll wire it in.
 
 ## Credits
 
