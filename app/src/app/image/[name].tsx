@@ -17,7 +17,7 @@ export default function ImageScreen() {
   const { t } = useTranslation();
   const colors = useColors();
   const { name } = useLocalSearchParams<{ name: string }>();
-  const asset = name ? images[name] : undefined;
+  const asset = name && Object.prototype.hasOwnProperty.call(images, name) ? images[name] : undefined;
   const close = useCallback(() => <IconButton icon="close" label={t('close')} color={colors.onPrimary} onPress={() => goBack('/')} />, [t, colors.onPrimary]);
   useTitle(name ?? '', close);
   if (!asset) return <NotFound message={t('image_not_found')} />;

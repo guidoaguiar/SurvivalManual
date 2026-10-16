@@ -21,3 +21,8 @@ it('shows not found for an unknown image', () => {
   renderRouter(routes, { initialUrl: '/image/missing.png' });
   expect(screen.getByText('Image not found')).toBeVisible();
 });
+
+it('shows not found for an inherited property name', () => {
+  renderRouter(routes, { initialUrl: '/image/constructor' });
+  expect(screen.getByText('Image not found')).toBeVisible();
+});
