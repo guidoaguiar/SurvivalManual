@@ -61,7 +61,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "test:content": "tsx --test scripts/content/*.test.mts"
   },
   "private": true,
   "jest": {
