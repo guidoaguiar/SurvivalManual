@@ -56,6 +56,14 @@ function mergeKnown(name: string, defaults: Rec, saved: unknown): Rec {
   return out;
 }
 
+// Changing a store's persisted shape: bump `version` and transform the old state in `migrate`
+// (it receives the saved state and its version). Without `migrate`, zustand drops saved data on a version mismatch.
 export function persistConfig<T>(name: string): PersistOptions<T> {
-  return { name, version: 1, storage: safeStorage<T>(), merge: (saved, current) => mergeKnown(name, current as Rec, saved) as T };
+  return {
+    name,
+    version: 1,
+    migrate: (state) => state as T,
+    storage: safeStorage<T>(),
+    merge: (saved, current) => mergeKnown(name, current as Rec, saved) as T,
+  };
 }
