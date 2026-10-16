@@ -34,9 +34,13 @@ export const toc: TocEntry[] = [
   { slug: 'People', titleKey: 'people', icon: 'account-group-outline' },
   { slug: 'Credits', titleKey: 'credits', icon: 'star-outline' },
   { slug: 'MultiTool', titleKey: 'multitool', appendix: true },
+  { slug: 'BasicMechanicalSkills', titleKey: 'basic_mechanical_skills', appendix: true },
+  { slug: 'BlackoutDriving', titleKey: 'blackout_driving', appendix: true },
+  { slug: 'CarRepair', titleKey: 'car_repair', appendix: true },
   { slug: 'DangerousArthropods', titleKey: 'insects_and_arachnids', appendix: true },
   { slug: 'FishAndMollusks', titleKey: 'fish_and_mollusks', appendix: true },
   { slug: 'RopesAndKnots', titleKey: 'ropes_and_knots', appendix: true },
+  { slug: 'Weapons', titleKey: 'weapons', appendix: true },
   { slug: 'FAQ', titleKey: 'faq', appendix: true },
   { slug: 'TranslatorNotes', titleKey: 'translator_notes', listed: false },
 ];
