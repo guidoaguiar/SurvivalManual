@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { importLegacyOnce } from '@/lib/legacyImport';
 import { useBookmarks } from './bookmarks';
 import { useChecklists } from './checklists';
 import { useEmergency } from './emergency';
@@ -9,11 +10,14 @@ const stores = [useSettings, useReading, useBookmarks, useChecklists, useEmergen
 const allHydrated = () => stores.every((s) => s.persist.hasHydrated());
 
 export function useHydrated(): boolean {
-  const [hydrated, setHydrated] = useState(allHydrated);
+  const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     if (hydrated) return;
     const check = () => {
-      if (allHydrated()) setHydrated(true);
+      if (!allHydrated()) return;
+      // Runs before the first Drawer render; idempotent via settings.legacyImported.
+      importLegacyOnce();
+      setHydrated(true);
     };
     const unsubs = stores.map((s) => s.persist.onFinishHydration(check));
     check();

@@ -41,3 +41,9 @@ it('marks the import done even without legacy data', () => {
   importLegacyOnce(() => null);
   expect(useSettings.getState()).toMatchObject({ theme: 'system', fontStep: 2, legacyImported: true });
 });
+
+it('does not overwrite a last position that already exists', () => {
+  useReading.setState({ last: { slug: 'Water', blockIndex: 7 } });
+  importLegacyOnce(() => ({ nightMode: null, fontSize: null, lastUrl: 'Fire' }));
+  expect(useReading.getState().last).toEqual({ slug: 'Water', blockIndex: 7 });
+});

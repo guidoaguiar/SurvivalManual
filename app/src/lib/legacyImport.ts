@@ -25,5 +25,6 @@ export function importLegacyOnce(read: () => RawLegacyPrefs | null = readLegacyP
   if (m.theme) patch.theme = m.theme;
   if (m.fontStep !== undefined) patch.fontStep = m.fontStep;
   settings.set(patch);
-  if (m.lastSlug) useReading.getState().setLast(m.lastSlug, 0);
+  const reading = useReading.getState();
+  if (m.lastSlug && !reading.last) reading.setLast(m.lastSlug, 0);
 }

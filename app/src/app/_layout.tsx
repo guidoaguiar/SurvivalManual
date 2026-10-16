@@ -1,10 +1,9 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
 import { Drawer } from 'expo-router/drawer';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import i18n, { pickLanguage } from '@/i18n';
-import { importLegacyOnce } from '@/lib/legacyImport';
 import { registerServiceWorker } from '@/pwa/register';
 import { DrawerContent } from '@/components/DrawerContent';
 import { useHydrated } from '@/store/hydration';
@@ -25,14 +24,7 @@ export default function RootLayout() {
     registerServiceWorker();
   }, []);
 
-  // importLegacyOnce is idempotent; running it here guarantees it precedes the first Drawer render.
-  const ready = useMemo(() => {
-    if (!hydrated) return false;
-    importLegacyOnce();
-    return true;
-  }, [hydrated]);
-
-  if (!ready) return null;
+  if (!hydrated) return null;
 
   return (
     <GestureHandlerRootView style={styles.fill}>
