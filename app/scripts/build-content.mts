@@ -74,7 +74,7 @@ function main() {
   const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
   const legacyEn: Record<string, string> = JSON.parse(readFileSync(join(root, 'src/i18n/locales/legacy.en.json'), 'utf8'));
   const { warnings } = buildContent({
-    src: resolve(root, process.env.CONTENT_SRC ?? '../android/src/main/assets/md'),
+    src: resolve(root, process.env.CONTENT_SRC ?? '../wiki'),
     out: join(root, 'src/content'),
     imgOut: join(root, 'assets/content'),
     slugs: toc.map((e) => e.slug),

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="preference_key_nightmode" translatable="false">NIGHTMODE</string>
-    <string name="preference_key_edittoggle" translatable="false">EDITTOGGLE</string>
-    <string name="preference_key_fontsize" translatable="false">FONTSIZETOGGLE</string>
-    <string name="preference_key_select_text" translatable="false">SELECTTEXTTOGGLE</string>
-</resources>

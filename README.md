@@ -27,7 +27,7 @@ npm test                      # unit + component tests
 npm run export:web            # offline PWA in app/dist
 ```
 
-The `app/` folder is the Expo app (Expo SDK 57). The `android/` folder holds the original Kotlin app this project was forked from; it is kept for reference and is not part of the build.
+The `app/` folder is the Expo app (Expo SDK 57). The `wiki/` folder is a git submodule with the chapter content (this project's GitHub wiki); `npm run content` turns it into the app's chapters, images and search index.
 
 ### Releasing
 
