@@ -6,14 +6,14 @@
 
 **Architecture:** A Node build script turns the wiki markdown (git submodule) into per-chapter JSON block trees, a MiniSearch index and an image map. The Expo Router app renders those blocks with a small custom React Native renderer inside a drawer layout. All user state lives in persisted Zustand stores (expo-sqlite kv-store on native, localStorage on web). No network is used at runtime.
 
-**Tech Stack:** Expo SDK 56, Expo Router (drawer), TypeScript (strict), unified/remark/rehype (build time only), MiniSearch, Zustand 5, i18next, expo-sqlite, expo-speech, expo-camera, expo-location, expo-audio, expo-keep-awake, react-native-gesture-handler + Reanimated, Jest (jest-expo) + React Native Testing Library, `node:test` via `tsx` for build scripts, workbox-build for the PWA, EAS Build/Submit.
+**Tech Stack:** Expo SDK 57, Expo Router (drawer), TypeScript (strict), unified/remark/rehype (build time only), MiniSearch, Zustand 5, i18next, expo-sqlite, expo-speech, expo-camera, expo-location, expo-audio, expo-keep-awake, react-native-gesture-handler + Reanimated, Jest (jest-expo) + React Native Testing Library, `node:test` via `tsx` for build scripts, workbox-build for the PWA, EAS Build/Submit.
 
 **Spec:** `docs/superpowers/specs/2026-10-15-expo-rebuild-design.md`
 
 ## Global Constraints
 
 - The Expo project lives in `app/` at the repo root. Routes are in `app/src/app/`; all other app code is in `app/src/`. Tests must never be placed inside `app/src/app/`, because every file there becomes a route.
-- Use Expo SDK 56. Add native-capable packages with `npx expo install`, never with a bare `npm i`.
+- Use Expo SDK 57. Add native-capable packages with `npx expo install`, never with a bare `npm i`.
 - TypeScript `strict: true`. The path alias `@/*` maps to `app/src/*`.
 - Android package and iOS bundle ID: `org.ligi.survivalmanual`. Android `versionCode` ≥ 600.
 - No runtime network access: no analytics, no remote fetches, no EAS Update.
@@ -222,7 +222,7 @@ Run: `npx tsc --noEmit` → exit 0.
 ```bash
 cd /home/guido/DevPessoal/SurvivalManual
 git add app
-git commit -m "feat(app): scaffold Expo SDK 56 project with router, jest and lint"
+git commit -m "feat(app): scaffold Expo SDK 57 project with router, jest and lint"
 ```
 
 ---

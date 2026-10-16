@@ -24,7 +24,7 @@ Rebuild the Survival Manual app (currently ~950 lines of Kotlin, Android-only) i
 ```
 SurvivalManual/
   android/                 existing Kotlin app (untouched until cutover, then deleted)
-  app/                     new Expo project (TypeScript, Expo SDK 56)
+  app/                     new Expo project (TypeScript, Expo SDK 57)
     src/app/               Expo Router routes
       _layout.tsx          Drawer + ThemeProvider + i18n provider
       index.tsx            redirects to last-read chapter (fallback: Introduction)
