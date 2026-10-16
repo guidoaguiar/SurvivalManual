@@ -30,6 +30,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={styles.fill}>
       <StatusBar style="light" />
       <Drawer
+        backBehavior="history"
         drawerContent={(props) => <DrawerContent navigation={props.navigation} />}
         screenOptions={{
           drawerType: width >= 900 ? 'permanent' : 'front',
