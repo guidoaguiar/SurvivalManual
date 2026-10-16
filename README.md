@@ -73,7 +73,7 @@ When translating a chapter:
 
 - **Keep figure anchors and images exactly as they are.** Lines such as `<a name="fig7-4"></a>` and `![Figure 7-4. …](fig07-04.png)` must stay. You can translate the caption text, but don't change the file name. Images are shared by every language.
 - **Keep links to other chapters unchanged**, e.g. `[comida](Food)`. The part in parentheses is the English chapter name.
-- **Links to a heading inside a chapter** use that heading's anchor in your language. The anchor is the heading in lowercase with spaces replaced by `-`, e.g. `## Purificação da água` becomes `#purificação-da-água`.
+- **Links to a heading inside a chapter** use that heading's anchor in your language. The anchor is the heading in lowercase, with punctuation removed and spaces replaced by `-`. For example, `## Purificação da água` becomes `#purificação-da-água` and `## Fogo: básico` becomes `#fogo-básico`. If two headings are identical, the second one gets `-1`, the third `-2`, and so on.
 - **Start the file with a status comment**, so others know whether it has been checked:
   ```
   <!-- translated-from: <wiki commit of the English page> · status: machine | reviewed -->
