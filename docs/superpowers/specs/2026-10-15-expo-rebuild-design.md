@@ -70,7 +70,7 @@ Runs before `start`, `export`, `test` and EAS builds (npm `pre*` scripts + `eas-
 
 Only slugs listed in `src/toc.ts` are built. The wiki's unlisted drafts (Home, Weapons, CarRepair, BlackoutDriving, BasicMechanicalSkills) are excluded, including from search.
 
-**Fail the build** when: a toc slug has no markdown file; an image reference has no file; an internal link targets an unknown slug. A link to an unknown anchor is a build warning (the chapter opens at the top). Links to slugs in `IGNORED_LINKS` (`LifeStraw`, `SolarUSBCharger`, `OHTMultiTool`: affiliate pages that don't exist in the wiki) render as plain text.
+**Fail the build** when: a toc slug has no markdown file; an image reference has no file; an internal link targets an unknown slug. A link to an unknown anchor is a build warning (the chapter opens at the top). Links to slugs in `IGNORED_LINKS` (affiliate pages that don't exist in the wiki: `LifeStraw`, `SolarUSBCharger`, `OHTMultiTool`, `Audible`, `CampStoveUSB`, `HandCrankUSB`, `CarUSBCharger`, `PandaDubLionsDen`, `TreadMultiTool`) render as plain text.
 
 ## 4. Navigation
 
@@ -108,7 +108,7 @@ Zustand stores with `persist` middleware. Storage: `expo-sqlite/kv-store` on iOS
 |---|---|
 | `settings` | `theme: 'system'|'day'|'night'|'amoled'`, `fontStep: 0–4`, `keepAwake: boolean`, `ttsRate: number`, `language?: string`, `legacyImported: boolean` |
 | `reading` | `last: { slug, blockIndex }`, `recents: string[]` |
-| `bookmarks` | `{ id, slug, blockId, label?, createdAt }[]` |
+| `bookmarks` | `{ id, slug, blockIndex, label?, createdAt }[]` (keyed by block index; positions are clamped when content changes) |
 | `checklists` | `{ id, title, templateId?, items: { id, text, done }[] }[]` |
 | `emergency` | `{ name, bloodType, allergies, medications, conditions, contacts: { name, phone }[], notes }` |
 
