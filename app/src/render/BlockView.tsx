@@ -30,7 +30,7 @@ export function BlockView({ block }: { block: Block }) {
         <View style={styles.list}>
           {block.items.map((item, i) => (
             <View key={i} style={styles.listItem}>
-              <Text style={[base, styles.bullet]}>{block.ordered ? `${block.start + i}.` : '•'}</Text>
+              <Text style={[base, { width: c.fontSize * 2 }]}>{block.ordered ? `${block.start + i}.` : '•'}</Text>
               <View style={styles.flex}>
                 {item.map((b, j) => (
                   <BlockView key={j} block={b} />
@@ -163,7 +163,6 @@ const styles = StyleSheet.create({
   paragraph: { marginBottom: 10 },
   list: { marginBottom: 10 },
   listItem: { flexDirection: 'row' },
-  bullet: { width: 28 },
   flex: { flex: 1 },
   quote: { borderLeftWidth: 4, paddingLeft: 12, marginBottom: 10 },
   tableScroll: { marginBottom: 12 },

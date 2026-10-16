@@ -61,3 +61,9 @@ it('highlights search terms', () => {
   show({ type: 'paragraph', children: [text('Boil Water now')] }, ctx({ terms: ['water'] }));
   expect(screen.getAllByTestId('hl').map((n) => n.props.children)).toEqual(['Water']);
 });
+
+it('scales the list marker column with font size', () => {
+  const items = Array.from({ length: 12 }, (_, i) => [{ type: 'paragraph' as const, children: [text(`item${i}`)] }]);
+  show({ type: 'list', ordered: true, start: 1, items }, ctx({ fontSize: 24 }));
+  expect(screen.getByText('12.')).toHaveStyle({ width: 48 });
+});
