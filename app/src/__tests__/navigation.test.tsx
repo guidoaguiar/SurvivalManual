@@ -5,6 +5,7 @@ import RootLayout from '@/app/_layout';
 import ChapterScreen from '@/app/chapter/[slug]';
 import ImageScreen from '@/app/image/[name]';
 import Index from '@/app/index';
+import { goBack } from '@/lib/nav';
 import SearchScreen from '@/app/search';
 import { useReading } from '@/store/reading';
 import { useSettings } from '@/store/settings';
@@ -72,13 +73,41 @@ it('closing an image returns to the chapter with its params intact', async () =>
   expect(screen).toHaveSearchParams({ slug: 'Alpha', q: 'water' });
 });
 
-it('exits the app on Android when Back reaches the launch route', async () => {
+function onAndroid() {
   jest.replaceProperty(Platform, 'OS', 'android');
-  const exit = jest.spyOn(BackHandler, 'exitApp').mockImplementation(() => {});
+  return jest.spyOn(BackHandler, 'exitApp').mockImplementation(() => {});
+}
+
+it('exits the app on Android when Back reaches the launch route, and resumes on the chapter', async () => {
+  const exit = onAndroid();
   await launch();
   expect(exit).not.toHaveBeenCalled();
   go(() => router.back());
   expect(exit).toHaveBeenCalledTimes(1);
+  // exitApp only backgrounds the task; on resume the chapter must be showing, not a blank index.
+  expect(screen).toHavePathname('/chapter/Introduction');
+  go(() => router.back());
+  expect(exit).toHaveBeenCalledTimes(2);
+  expect(screen).toHavePathname('/chapter/Introduction');
+});
+
+it('"Back to contents" on a missing chapter lands on a chapter without exiting', async () => {
+  const exit = onAndroid();
+  await launch();
+  go(() => router.push('/chapter/Nope'));
+  fireEvent.press(screen.getByText('Back to contents'));
+  expect(screen).toHavePathname('/chapter/Introduction');
+  expect(exit).not.toHaveBeenCalled();
+});
+
+it('the goBack fallback to / after launch lands on a chapter without exiting', async () => {
+  const exit = onAndroid();
+  await launch();
+  go(() => router.push('/search'));
+  jest.spyOn(router, 'canGoBack').mockReturnValue(false);
+  go(() => goBack('/'));
+  expect(screen).toHavePathname('/chapter/Introduction');
+  expect(exit).not.toHaveBeenCalled();
 });
 
 it('redirects again instead of exiting on other platforms', async () => {
