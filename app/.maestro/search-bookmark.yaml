@@ -1,0 +1,15 @@
+appId: org.ligi.survivalmanual
+---
+- launchApp:
+    clearState: true
+- openLink: survivalmanual://search
+- tapOn:
+    id: search-input
+- inputText: fire
+- tapOn:
+    id: search-result-0-0
+- assertVisible:
+    id: find-status
+- tapOn: Add bookmark
+- openLink: survivalmanual://bookmarks
+- assertVisible: Fire

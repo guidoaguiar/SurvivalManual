@@ -10,6 +10,26 @@ The content list is curated in [this wiki](https://github.com/ligi/SurvivalManua
 
 ![](https://raw.githubusercontent.com/ligi/SurvivalManual/master/assets/banner.png)
 
+## Expo app (v6)
+
+The `app/` folder holds the React Native + Expo rewrite that ships to Android, iOS and the web from one codebase. The Kotlin app in `android/` stays in the repo until the Expo app has fully replaced it on Google Play, and it remains the version published on F-Droid.
+
+```
+git submodule update --init   # chapter content
+cd app && npm install
+npm start                     # Expo dev server (builds content first)
+npm test                      # unit + component tests
+npm run export:web            # offline PWA in app/dist
+```
+
+### Releasing
+
+1. `npx eas-cli login`, then `npx eas-cli init` once to link the project.
+2. Android: upload the existing Play upload keystore with `npx eas-cli credentials` so updates install over the current app. Bump `android.versionCode` in `app/app.json`.
+3. `npx eas-cli build --profile production --platform all`
+4. `npx eas-cli submit --platform android` (internal track first) and `npx eas-cli submit --platform ios`.
+5. iOS needs a 1024×1024 app icon at `app/assets/icon.png` before App Store submission (the current one is 512×512).
+
 ## Contributing
 This app is libre (open) software, so pull requests are welcome.
 If you want to help translate, the app strings are on [Transifex](https://www.transifex.com/ligi/survivalmanual/).

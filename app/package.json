@@ -70,7 +70,9 @@
     "preandroid": "npm run content",
     "preios": "npm run content",
     "pretest": "npm run content",
-    "pretypecheck": "npm run content"
+    "pretypecheck": "npm run content",
+    "eas-build-pre-install": "cd .. && git submodule update --init --depth 1",
+    "eas-build-post-install": "npm run content"
   },
   "private": true,
   "jest": {
