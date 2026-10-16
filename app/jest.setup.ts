@@ -26,3 +26,6 @@ jest.mock('expo-keep-awake', () => ({
 }));
 
 import '@/i18n';
+
+// expo-audio hoists expo-asset@58 over expo's 56, which breaks loading the real icon set under jest.
+jest.mock('@expo/vector-icons', () => ({ MaterialCommunityIcons: () => null }));
