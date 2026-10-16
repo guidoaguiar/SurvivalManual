@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Modal, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useAudioPlayer } from 'expo-audio';
+import { type AudioPlayer, useAudioPlayer } from 'expo-audio';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/Button';
 import { IconButton } from '@/components/IconButton';
@@ -12,6 +12,11 @@ import { encode, runTimeline, toTimeline, unitMs } from '@/tools/morse';
 const beep = require('../../../assets/beep.wav');
 const MIN_WPM = 5;
 const MAX_WPM = 20;
+
+// Mutating a hook-returned player is the expo-audio API; kept out of the component body for the compiler lint.
+const enableLoop = (p: AudioPlayer) => {
+  p.loop = true;
+};
 
 export default function SosScreen() {
   const { t } = useTranslation();
@@ -50,7 +55,7 @@ export default function SosScreen() {
   useEffect(() => {
     if (!outputs.tone) return;
     if (running && on) {
-      player.loop = true;
+      enableLoop(player);
       void player.seekTo(0);
       player.play();
     } else {

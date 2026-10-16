@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
 import { Drawer } from 'expo-router/drawer';
 import { StatusBar } from 'expo-status-bar';
@@ -25,11 +25,11 @@ export default function RootLayout() {
     registerServiceWorker();
   }, []);
 
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    if (!hydrated) return;
+  // importLegacyOnce is idempotent; running it here guarantees it precedes the first Drawer render.
+  const ready = useMemo(() => {
+    if (!hydrated) return false;
     importLegacyOnce();
-    setReady(true);
+    return true;
   }, [hydrated]);
 
   if (!ready) return null;

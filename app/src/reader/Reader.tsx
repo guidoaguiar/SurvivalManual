@@ -43,9 +43,15 @@ export function Reader({ chapter, title, initialBlock, initialQuery }: Props) {
   const [firstVisible, setFirstVisible] = useState(initialBlock);
   const [query, setQuery] = useState(initialQuery ?? '');
   const [findOpen, setFindOpen] = useState(!!initialQuery);
-  const [cursor, setCursor] = useState(0);
+  const firstMatch = (m: number[]) => Math.max(0, m.findIndex((x) => x >= initialBlock));
   const terms = useMemo(() => (findOpen ? queryTerms(query) : []), [findOpen, query]);
   const matches = useMatches(chapter.blocks, terms);
+  const [cursor, setCursor] = useState(() => firstMatch(matches));
+  const [seenMatches, setSeenMatches] = useState(matches);
+  if (seenMatches !== matches) {
+    setSeenMatches(matches);
+    setCursor(firstMatch(matches));
+  }
   const { speaking, speakFrom, stop } = useReadAloud(chapter.blocks, ttsRate);
   const bookmarked = useBookmarks((s) => s.items.some((b) => b.id === bookmarkId(chapter.slug, firstVisible)));
   const toggleBookmark = useBookmarks((s) => s.toggle);
@@ -66,10 +72,6 @@ export function Reader({ chapter, title, initialBlock, initialQuery }: Props) {
       });
   }, [initialBlock, scrollTo]);
 
-  useEffect(() => {
-    const i = matches.findIndex((m) => m >= initialBlock);
-    setCursor(i === -1 ? 0 : i);
-  }, [matches, initialBlock]);
 
   useEffect(() => {
     if (speaking != null) scrollTo(speaking);
@@ -88,13 +90,16 @@ export function Reader({ chapter, title, initialBlock, initialQuery }: Props) {
   useFocusEffect(useCallback(() => () => stop(), [stop]));
 
   // FlatList requires a stable callback; the Reader is keyed by chapter, so the slug is fixed.
-  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    const indexes = viewableItems.map((v) => v.index).filter((i): i is number => i != null);
-    if (!indexes.length || !restored.current) return;
-    const first = Math.min(...indexes);
-    setFirstVisible(first);
-    useReading.getState().setLast(chapter.slug, first);
-  }).current;
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      const indexes = viewableItems.map((v) => v.index).filter((i): i is number => i != null);
+      if (!indexes.length || !restored.current) return;
+      const first = Math.min(...indexes);
+      setFirstVisible(first);
+      useReading.getState().setLast(chapter.slug, first);
+    },
+    [chapter.slug],
+  );
 
   const onScrollToIndexFailed = useCallback((info: { index: number; averageItemLength: number }) => {
     listRef.current?.scrollToOffset({ offset: info.averageItemLength * info.index, animated: false });
