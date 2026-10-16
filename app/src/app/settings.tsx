@@ -29,7 +29,7 @@ export default function SettingsScreen() {
       <Text style={{ color: colors.text, fontSize: fontSize(s.fontStep), marginBottom: 16 }}>{t('font_preview')}</Text>
       <View style={styles.switchRow}>
         <Text style={[styles.switchLabel, { color: colors.text }]}>{t('keep_awake')}</Text>
-        <Switch accessibilityRole="switch" value={s.keepAwake} onValueChange={(keepAwake) => s.set({ keepAwake })} />
+        <Switch accessibilityRole="switch" accessibilityLabel={t('keep_awake')} value={s.keepAwake} onValueChange={(keepAwake) => s.set({ keepAwake })} />
       </View>
       {label(t('tts_rate'))}
       <Choices<number>

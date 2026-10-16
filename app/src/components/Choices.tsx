@@ -28,5 +28,5 @@ export function Choices<T extends string | number>({ value, options, onChange }:
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
-  chip: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 16, borderWidth: 1 },
+  chip: { minHeight: 44, justifyContent: 'center', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 16, borderWidth: 1 },
 });
