@@ -1,5 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react-native';
+import { act, render, screen, waitFor } from '@testing-library/react-native';
 import * as Location from 'expo-location';
+import i18n from '@/i18n';
 import { cardinal } from '@/tools/cardinal';
 import { Compass } from '@/tools/Compass';
 
@@ -9,7 +10,7 @@ const perm = Location.requestForegroundPermissionsAsync as jest.Mock;
 const watch = Location.watchHeadingAsync as jest.Mock;
 
 it('names the eight cardinal directions', () => {
-  expect([0, 44, 46, 90, 180, 270, 359, -90, 720].map(cardinal)).toEqual(['N', 'NE', 'NE', 'E', 'S', 'W', 'N', 'W', 'N']);
+  expect([0, 44, 46, 90, 135, 180, 270, 359, -90, 720].map(cardinal)).toEqual(['n', 'ne', 'ne', 'e', 'se', 's', 'w', 'n', 'w', 'n']);
 });
 
 it('shows true heading when permitted', async () => {
@@ -21,7 +22,7 @@ it('shows true heading when permitted', async () => {
   render(<Compass />);
   await waitFor(() => expect(screen.getByText('90° E')).toBeVisible());
   expect(screen.getByText('True north')).toBeVisible();
-  expect(screen.getByLabelText('Heading 90 degrees E, True north')).toBeVisible();
+  expect(screen.getByLabelText('Heading 90 degrees East, True north')).toBeVisible();
 });
 
 it('falls back to magnetic heading and explains why', async () => {
@@ -42,4 +43,20 @@ it('shows unavailable when heading cannot be watched', async () => {
   watch.mockRejectedValue(new Error('no sensor'));
   render(<Compass />);
   await waitFor(() => expect(screen.getByText('A compass is not available on this device.')).toBeVisible());
+});
+
+it('localizes direction letters and spoken names', async () => {
+  await act(() => i18n.changeLanguage('pt-BR'));
+  try {
+    perm.mockResolvedValue({ granted: true });
+    watch.mockImplementation(async (cb) => {
+      cb({ trueHeading: 270, magHeading: 268, accuracy: 3 });
+      return { remove: jest.fn() };
+    });
+    render(<Compass />);
+    await waitFor(() => expect(screen.getByText('270° O')).toBeVisible());
+    expect(screen.getByLabelText(/Oeste/)).toBeVisible();
+  } finally {
+    await act(() => i18n.changeLanguage('en'));
+  }
 });

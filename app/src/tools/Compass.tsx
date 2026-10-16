@@ -44,21 +44,21 @@ export function Compass() {
 
   const deg = reading?.degrees ?? 0;
   const northLabel = reading?.isTrue ? t('compass_true') : t('compass_magnetic');
-  const headingLabel = reading ? `${t('compass_heading_a11y', { deg: Math.round(deg), dir: cardinal(deg) })}, ${northLabel}` : undefined;
+  const headingLabel = reading ? `${t('compass_heading_a11y', { deg: Math.round(deg), dir: t('dir_' + cardinal(deg) + '_full') })}, ${northLabel}` : undefined;
   return (
     <View style={styles.box}>
       <View style={styles.face} accessible={false} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
         <View style={[styles.dial, { borderColor: colors.border, transform: [{ rotate: `${-deg}deg` }] }]}>
-          {(['N', 'E', 'S', 'W'] as const).map((d, i) => (
-            <Text key={d} style={[styles.mark, MARKS[i], { color: d === 'N' ? colors.danger : colors.text }]}>
-              {d}
+          {(['n', 'e', 's', 'w'] as const).map((d, i) => (
+            <Text key={d} style={[styles.mark, MARKS[i], { color: i === 0 ? colors.danger : colors.text }]}>
+              {t('dir_' + d)}
             </Text>
           ))}
         </View>
         <View style={[styles.needle, { backgroundColor: colors.danger }]} />
       </View>
       <Text style={[styles.heading, { color: colors.text }]} accessibilityLabel={headingLabel} accessibilityLiveRegion="polite">
-        {reading ? `${Math.round(deg)}° ${cardinal(deg)}` : '…'}
+        {reading ? `${Math.round(deg)}° ${t('dir_' + cardinal(deg))}` : '…'}
       </Text>
       {reading && <Text style={{ color: colors.muted }}>{northLabel}</Text>}
       {permissionDenied && <Text style={[styles.note, { color: colors.muted }]}>{t('compass_permission')}</Text>}

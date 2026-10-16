@@ -51,5 +51,21 @@
   "preference_fontsize_summary": "De quelle taille devraient être les caractères ?",
   "preference_fontsize_title": "Taille de police",
   "search": "Rechercher",
-  "settings": "Paramètres"
+  "settings": "Paramètres",
+  "dir_n": "N",
+  "dir_ne": "NE",
+  "dir_e": "E",
+  "dir_se": "SE",
+  "dir_s": "S",
+  "dir_sw": "SO",
+  "dir_w": "O",
+  "dir_nw": "NO",
+  "dir_n_full": "Nord",
+  "dir_ne_full": "Nord-Est",
+  "dir_e_full": "Est",
+  "dir_se_full": "Sud-Est",
+  "dir_s_full": "Sud",
+  "dir_sw_full": "Sud-Ouest",
+  "dir_w_full": "Ouest",
+  "dir_nw_full": "Nord-Ouest"
 }

@@ -143,5 +143,21 @@
   "compass_learn": "Find direction without a compass",
   "compass_true": "True north",
   "compass_magnetic": "Magnetic north",
-  "compass_heading_a11y": "Heading {{deg}} degrees {{dir}}"
+  "compass_heading_a11y": "Heading {{deg}} degrees {{dir}}",
+  "dir_n": "N",
+  "dir_ne": "NE",
+  "dir_e": "E",
+  "dir_se": "SE",
+  "dir_s": "S",
+  "dir_sw": "SW",
+  "dir_w": "W",
+  "dir_nw": "NW",
+  "dir_n_full": "North",
+  "dir_ne_full": "Northeast",
+  "dir_e_full": "East",
+  "dir_se_full": "Southeast",
+  "dir_s_full": "South",
+  "dir_sw_full": "Southwest",
+  "dir_w_full": "West",
+  "dir_nw_full": "Northwest"
 }

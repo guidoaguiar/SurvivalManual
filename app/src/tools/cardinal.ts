@@ -1,6 +1,8 @@
-const NAMES = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+const NAMES = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'] as const;
 
-export function cardinal(deg: number): string {
+export type Cardinal = (typeof NAMES)[number];
+
+export function cardinal(deg: number): Cardinal {
   const d = ((deg % 360) + 360) % 360;
   return NAMES[Math.round(d / 45) % 8];
 }
