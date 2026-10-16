@@ -74,11 +74,14 @@ function RescuerView({ card, onClose }: { card: EmergencyCard; onClose: () => vo
         </Text>
       )}
       {contacts
-        .map((c, i) => (
-          <Text key={i} style={styles.rescuerValue} accessibilityRole={c.phone.trim() ? 'link' : undefined} onPress={c.phone ? () => Linking.openURL(`tel:${c.phone.replace(/\s/g, '')}`) : undefined}>
+        .map((c, i) => {
+          const phone = c.phone.trim();
+          return (
+          <Text key={i} style={styles.rescuerValue} accessibilityRole={phone ? 'link' : undefined} onPress={phone ? () => Linking.openURL(`tel:${phone.replace(/\s/g, '')}`) : undefined}>
             {`${c.name} ${c.phone}`.trim()}
           </Text>
-        ))}
+          );
+        })}
       <Button label={t('close')} onPress={onClose} />
     </ScrollView>
   );

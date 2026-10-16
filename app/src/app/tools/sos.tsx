@@ -24,11 +24,13 @@ export default function SosScreen() {
   const [running, setRunning] = useState(false);
   const [on, setOn] = useState(false);
   const [torchError, setTorchError] = useState(false);
+  const [torchDenied, setTorchDenied] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const player = useAudioPlayer(beep);
   const cancel = useRef<(() => void) | null>(null);
   const { code, skipped } = useMemo(() => encode(message), [message]);
-  const torchSupported = Platform.OS !== 'web' && !torchError;
+  const permBlocked = !!permission && !permission.granted && !permission.canAskAgain;
+  const torchSupported = Platform.OS !== 'web' && !torchError && !permBlocked;
 
   const stop = useCallback(() => {
     cancel.current?.();
@@ -59,7 +61,10 @@ export default function SosScreen() {
   const setTorch = async (value: boolean) => {
     if (value && !permission?.granted) {
       const res = await requestPermission();
-      if (!res.granted) return;
+      if (!res.granted) {
+        setTorchDenied(true);
+        return;
+      }
     }
     setOutputs((o) => ({ ...o, torch: value }));
   };
@@ -98,7 +103,7 @@ export default function SosScreen() {
 
       {Platform.OS !== 'web' && toggle(t('sos_torch'), outputs.torch, (v) => void setTorch(v), !torchSupported)}
       {Platform.OS !== 'web' && torchError && <Text style={{ color: colors.muted }}>{t('sos_no_torch')}</Text>}
-      {Platform.OS !== 'web' && permission && !permission.granted && !permission.canAskAgain && <Text style={{ color: colors.muted }}>{t('sos_torch_permission')}</Text>}
+      {Platform.OS !== 'web' && (torchDenied || permBlocked) && <Text style={{ color: colors.muted }}>{t('sos_torch_permission')}</Text>}
       {toggle(t('sos_screen'), outputs.screen, (v) => setOutputs((o) => ({ ...o, screen: v })))}
       {toggle(t('sos_tone'), outputs.tone, (v) => setOutputs((o) => ({ ...o, tone: v })))}
       {toggle(t('sos_loop'), loop, setLoop)}

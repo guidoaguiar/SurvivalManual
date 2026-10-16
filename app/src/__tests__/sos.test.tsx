@@ -2,9 +2,11 @@ import { Stack } from 'expo-router';
 import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import SosScreen from '@/app/tools/sos';
 
+let mockPermission = { granted: false, canAskAgain: true };
+const mockRequest = jest.fn(async () => ({ granted: false }));
 jest.mock('expo-camera', () => ({
   CameraView: () => null,
-  useCameraPermissions: () => [{ granted: false }, jest.fn(async () => ({ granted: false }))],
+  useCameraPermissions: () => [mockPermission, mockRequest],
 }));
 jest.mock('expo-audio', () => ({
   useAudioPlayer: () => ({ play: jest.fn(), pause: jest.fn(), seekTo: jest.fn(async () => {}), loop: false }),
@@ -12,7 +14,11 @@ jest.mock('expo-audio', () => ({
 
 const routes = { _layout: () => <Stack />, 'tools/sos': SosScreen };
 
-beforeEach(() => jest.useFakeTimers());
+beforeEach(() => {
+  jest.useFakeTimers();
+  mockPermission = { granted: false, canAskAgain: true };
+  mockRequest.mockClear();
+});
 afterEach(() => jest.useRealTimers());
 
 it('strobes the screen in Morse timing and stops on tap', () => {
@@ -39,4 +45,19 @@ it('changes speed within 5–20 wpm', () => {
   expect(screen.getByText('Speed: 20 words per minute')).toBeVisible();
   for (let i = 0; i < 30; i++) fireEvent.press(screen.getByLabelText('Slower'));
   expect(screen.getByText('Speed: 5 words per minute')).toBeVisible();
+});
+
+it('explains a denied camera permission and keeps the switch enabled while it can be asked again', async () => {
+  renderRouter(routes, { initialUrl: '/tools/sos' });
+  await act(async () => fireEvent(screen.getByLabelText('Flashlight'), 'valueChange', true));
+  expect(mockRequest).toHaveBeenCalled();
+  expect(screen.getByText('Camera permission is needed to use the flashlight')).toBeVisible();
+  expect(screen.getByLabelText('Flashlight').props.disabled).toBeFalsy();
+});
+
+it('disables the flashlight switch when permission can no longer be requested', () => {
+  mockPermission = { granted: false, canAskAgain: false };
+  renderRouter(routes, { initialUrl: '/tools/sos' });
+  expect(screen.getByLabelText('Flashlight').props.disabled).toBe(true);
+  expect(screen.getByText('Camera permission is needed to use the flashlight')).toBeVisible();
 });
