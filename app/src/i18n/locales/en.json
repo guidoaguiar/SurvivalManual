@@ -76,5 +76,6 @@
   "compass_permission": "Location permission is needed for true north. Showing magnetic north.",
   "compass_learn": "Find direction without a compass",
   "compass_true": "True north",
-  "compass_magnetic": "Magnetic north"
+  "compass_magnetic": "Magnetic north",
+  "compass_heading_a11y": "Heading {{deg}} degrees {{dir}}"
 }

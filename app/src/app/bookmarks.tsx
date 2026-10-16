@@ -22,6 +22,7 @@ export default function BookmarksScreen() {
       renderItem={({ item }) => (
         <View style={[styles.row, { borderColor: colors.border }]}>
           <Pressable
+            accessibilityRole="button"
             style={styles.main}
             onPress={() => router.push({ pathname: '/chapter/[slug]', params: { slug: item.slug, block: String(item.blockIndex) } })}
           >

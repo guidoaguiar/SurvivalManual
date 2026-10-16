@@ -26,7 +26,7 @@ export default function ChecklistsScreen() {
     <ScrollView contentContainerStyle={styles.content}>
       {lists.length === 0 && <Text style={[styles.empty, { color: colors.muted }]}>{t('checklists_empty')}</Text>}
       {lists.map((l) => (
-        <Pressable key={l.id} onPress={() => open(l.id)} style={[styles.card, { borderColor: colors.border }]}>
+        <Pressable key={l.id} accessibilityRole="button" onPress={() => open(l.id)} style={[styles.card, { borderColor: colors.border }]}>
           <Text style={[styles.title, { color: colors.text }]}>{l.title}</Text>
           <Text style={{ color: colors.muted }}>{`${l.items.filter((i) => i.done).length}/${l.items.length}`}</Text>
         </Pressable>

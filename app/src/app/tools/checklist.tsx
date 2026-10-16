@@ -38,7 +38,7 @@ export default function ChecklistScreen() {
       />
       {list.items.map((item) => (
         <View key={item.id} style={styles.item}>
-          <Pressable accessibilityRole="checkbox" accessibilityLabel={item.text} accessibilityState={{ checked: item.done }} onPress={() => toggle(list.id, item.id)} hitSlop={8}>
+          <Pressable accessibilityRole="checkbox" accessibilityLabel={item.text} accessibilityState={{ checked: item.done }} onPress={() => toggle(list.id, item.id)} hitSlop={10}>
             <MaterialCommunityIcons name={item.done ? 'checkbox-marked' : 'checkbox-blank-outline'} size={26} color={colors.primary} />
           </Pressable>
           <TextInput

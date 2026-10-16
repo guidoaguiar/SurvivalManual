@@ -21,6 +21,7 @@ it('shows true heading when permitted', async () => {
   render(<Compass />);
   await waitFor(() => expect(screen.getByText('90° E')).toBeVisible());
   expect(screen.getByText('True north')).toBeVisible();
+  expect(screen.getByLabelText('Heading 90 degrees E, True north')).toBeVisible();
 });
 
 it('falls back to magnetic heading and explains why', async () => {

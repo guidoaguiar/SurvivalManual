@@ -43,9 +43,11 @@ export function Compass() {
   if (unavailable) return <CompassUnavailable />;
 
   const deg = reading?.degrees ?? 0;
+  const northLabel = reading?.isTrue ? t('compass_true') : t('compass_magnetic');
+  const headingLabel = reading ? `${t('compass_heading_a11y', { deg: Math.round(deg), dir: cardinal(deg) })}, ${northLabel}` : undefined;
   return (
     <View style={styles.box}>
-      <View style={styles.face}>
+      <View style={styles.face} accessible={false} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
         <View style={[styles.dial, { borderColor: colors.border, transform: [{ rotate: `${-deg}deg` }] }]}>
           {(['N', 'E', 'S', 'W'] as const).map((d, i) => (
             <Text key={d} style={[styles.mark, MARKS[i], { color: d === 'N' ? colors.danger : colors.text }]}>
@@ -55,8 +57,10 @@ export function Compass() {
         </View>
         <View style={[styles.needle, { backgroundColor: colors.danger }]} />
       </View>
-      <Text style={[styles.heading, { color: colors.text }]}>{reading ? `${Math.round(deg)}° ${cardinal(deg)}` : '…'}</Text>
-      {reading && <Text style={{ color: colors.muted }}>{reading.isTrue ? t('compass_true') : t('compass_magnetic')}</Text>}
+      <Text style={[styles.heading, { color: colors.text }]} accessibilityLabel={headingLabel} accessibilityLiveRegion="polite">
+        {reading ? `${Math.round(deg)}° ${cardinal(deg)}` : '…'}
+      </Text>
+      {reading && <Text style={{ color: colors.muted }}>{northLabel}</Text>}
       {permissionDenied && <Text style={[styles.note, { color: colors.muted }]}>{t('compass_permission')}</Text>}
       {reading && reading.accuracy <= 1 && <Text style={[styles.note, { color: colors.danger }]}>{t('compass_calibrate')}</Text>}
       <Button variant="plain" label={t('compass_learn')} onPress={() => router.push('/chapter/DirectionFinding')} />
