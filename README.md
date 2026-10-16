@@ -46,26 +46,51 @@ Pull requests are welcome, for both the app and the content. To improve a chapte
 
 ### Translating
 
-The app's interface can be translated: menus, buttons, settings, tool screens and chapter titles. The chapter text itself comes from the wiki and is English only for now.
+Both the app's interface and the guide's chapters can be translated. Partial translations are fine: anything not translated yet shows in English.
 
-Each language is one JSON file in [`app/src/i18n/locales/`](app/src/i18n/locales), named after its language code (`en.json`, `fr.json`, …). Send changes as a normal pull request. [`en.json`](app/src/i18n/locales/en.json) is the reference and has every string.
+Language codes follow the usual tags: `fr`, `de`, `pt-BR`, `es-MX`, …
 
-When translating:
+#### The interface
+
+Each language is one JSON file in [`app/src/i18n/locales/`](app/src/i18n/locales), named after its code (`en.json`, `fr.json`, `pt-BR.json`). [`en.json`](app/src/i18n/locales/en.json) is the reference and has every string, including the chapter titles.
 
 - Only change the **values**. Keep every key (the part before the `:`) exactly as it is.
 - Keep placeholders such as `{{current}}`, `{{q}}` or `{{wpm}}` unchanged. They are filled in by the app.
-- Anything you leave out falls back to English, so a partial translation is fine.
+- Set `language_name` to your language's own name (e.g. `"Deutsch"`). It is shown in Settings → Language.
 
-**Improving an existing language.** Open its file, e.g. `fr.json`, and add or fix entries. Any key from `en.json` that's missing there is untranslated: copy it over and translate the value. (French currently covers about a third of the strings.)
+To add a language, copy `en.json` to `<code>.json` and translate it. That's all: the app picks the file up automatically.
 
-**Adding a new language**, e.g. Portuguese (`pt`):
+#### The guide's chapters
 
-1. Copy `en.json` to `pt.json` and translate the values.
-2. In [`app/src/i18n/index.ts`](app/src/i18n/index.ts), add `'pt'` to `languages`, import the file, and add `pt: { translation: pt }` to `resources`.
-3. In [`app/src/app/settings.tsx`](app/src/app/settings.tsx), add `['pt', 'Português']` to the language options.
-4. Check it: run `npm test` in `app/`, then `npm start`, open **Settings → Language** and pick your language.
+Chapters live in the [wiki](https://github.com/guidoaguiar/SurvivalManual/wiki), which is the `wiki/` submodule in this repo. English chapters sit at the top of the wiki. Translations go in a folder named after the language code, with **the same file names**:
 
-You don't need to be a developer to help. If editing code is not for you, open an issue with your translated JSON file attached and we'll wire it in.
+```
+wiki/Water.md          English
+wiki/pt-BR/Water.md    Brazilian Portuguese
+```
+
+When translating a chapter:
+
+- **Keep figure anchors and images exactly as they are.** Lines such as `<a name="fig7-4"></a>` and `![Figure 7-4. …](fig07-04.png)` must stay. You can translate the caption text, but don't change the file name. Images are shared by every language.
+- **Keep links to other chapters unchanged**, e.g. `[comida](Food)`. The part in parentheses is the English chapter name.
+- **Links to a heading inside a chapter** use that heading's anchor in your language. The anchor is the heading in lowercase with spaces replaced by `-`, e.g. `## Purificação da água` becomes `#purificação-da-água`.
+- **Start the file with a status comment**, so others know whether it has been checked:
+  ```
+  <!-- translated-from: <wiki commit of the English page> · status: machine | reviewed -->
+  ```
+  Use `machine` for automatic or unchecked translations and `reviewed` once a fluent speaker has read it. Safety-critical chapters (first aid, poisonous plants, water, cold) deserve a careful human review.
+
+#### Checking your translation
+
+```
+cd app
+npm run content   # builds every language; warnings start with your language code
+npm start         # open Settings → Language and pick your language
+```
+
+`npm run content` fails if an image is missing, and it warns about links to headings that don't exist or figure anchors your translation dropped.
+
+You don't need to be a developer to help. If git is not for you, open an issue with your translated file attached and we'll add it.
 
 ## Credits
 
