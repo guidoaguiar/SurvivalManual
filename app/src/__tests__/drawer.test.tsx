@@ -1,5 +1,5 @@
 import { Text } from 'react-native';
-import { fireEvent, renderRouter, screen } from 'expo-router/testing-library';
+import { act, fireEvent, renderRouter, screen } from 'expo-router/testing-library';
 import { DrawerContent } from '@/components/DrawerContent';
 import { useEmergency } from '@/store/emergency';
 
@@ -33,7 +33,9 @@ it('collapses the appendix until opened', () => {
 it('pins the emergency card only when it has content', () => {
   renderRouter(routes, { initialUrl: '/' });
   expect(screen.getAllByText('Emergency card')).toHaveLength(1);
-  useEmergency.getState().update({ bloodType: 'A-' });
+  act(() => {
+    useEmergency.getState().update({ bloodType: 'A-' });
+  });
   renderRouter(routes, { initialUrl: '/' });
   expect(screen.getAllByText('Emergency card')).toHaveLength(2);
 });

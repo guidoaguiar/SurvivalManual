@@ -84,5 +84,8 @@
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
     }
+  },
+  "overrides": {
+    "expo-asset": "~56.0.25"
   }
 }
