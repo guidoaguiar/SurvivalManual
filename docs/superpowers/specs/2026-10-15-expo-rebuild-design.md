@@ -157,8 +157,8 @@ Form with the fields in §7. Stored on the device only; the screen states this. 
 ## 12. Release and cutover
 
 1. EAS Build profiles: `preview` (internal APK / ad-hoc), `production`.
-2. Android: package `org.ligi.survivalmanual`, existing upload keystore uploaded to EAS credentials, `versionCode` 600+. Play internal testing track → production.
-3. iOS: new bundle ID `org.ligi.survivalmanual`; App Store Connect app record; `eas submit`.
+2. Android: package `com.midnightcoder.survivalmanual` (this project is a fork, so it ships as a new listing with its own EAS-managed keystore; the original `org.ligi.survivalmanual` listing and keystore belong to the original author).
+3. iOS: bundle ID `com.midnightcoder.survivalmanual`; App Store Connect app record; `eas submit`.
 4. Settings migration: a local Expo module `modules/legacy-prefs` (Android Kotlin) that reads, once on first launch, the legacy default SharedPreferences keys `NIGHTMODE` (`day`/`night`/`darknight`/`system`, or missing/`auto`) and `FONTSIZETOGGLE` (`"0"`–`"4"` → `fontStep`), plus `lastVisitedURL` from the Kotpref `State` prefs file. Values are mapped into the stores (`day` → `day`, `night` → `night`, `darknight` → `amoled`, anything else → `system`), then a migration-done flag is set. Exposed to JS as `getLegacyPrefs(): Promise<{ nightMode?, fontStep?, lastUrl? } | null>`; returns `null` on iOS/Web.
 5. README: new badges/instructions; note that F-Droid stays on the legacy 5.x build.
 6. After the Play production rollout reaches 100% with no regressions for 2 weeks, delete `android/` and the Gradle files, and move the submodule to `app/content/md`.

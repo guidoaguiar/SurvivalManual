@@ -1,4 +1,4 @@
-appId: org.ligi.survivalmanual
+appId: com.midnightcoder.survivalmanual
 ---
 - launchApp:
     clearState: true

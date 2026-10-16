@@ -1,42 +1,59 @@
-[![Android app on Google Play](https://ligi.de/img/play_badge.png)](https://play.google.com/store/apps/details?id=org.ligi.survivalmanual)
-[![Android app on FDroid](https://ligi.de/img/fdroid_badge.png)](https://f-droid.org/packages/org.ligi.survivalmanual/)
-[![Android app at Amazon](https://ligi.de/img/amazon_badge.png)](https://www.amazon.com/ligi-Survival-Manual/dp/B06WW43R3T)
+# Survival Manual
 
-## About
-This is a survival manual/guide based on the public domain US Army Survival Field Manual [FM 3-05.70 (FM 21-76)](https://fas.org/irp/doddir/army/fm3-05-70.pdf).
-It is fully functional offline, which is important in the case of a catastrophe.
+![](assets/banner.png)
 
-The content list is curated in [this wiki](https://github.com/ligi/SurvivalManual/wiki).
+An offline survival guide for **Android, iOS and the web**, based on the public domain US Army Survival Field Manual [FM 3-05.70 (FM 21-76)](https://fas.org/irp/doddir/army/fm3-05-70.pdf). Once installed it needs no connection at all, which matters most when everything else has failed.
 
-![](https://raw.githubusercontent.com/ligi/SurvivalManual/master/assets/banner.png)
+This project is a fork of [ligi/SurvivalManual](https://github.com/ligi/SurvivalManual), rebuilt from scratch in React Native + Expo. It keeps the original's offline-first spirit and content, and adds:
 
-## Expo app (v6)
+- **One codebase for Android, iOS and an installable offline web app (PWA)**
+- **Better search**: fuzzy, accent-insensitive, jumps to the exact section and highlights every match
+- **Bookmarks and recently read** chapters, plus resume where you left off
+- **Checklists**: survival kit, 72-hour plan and medical kit templates, or your own
+- **Emergency card**: medical info and contacts, stored only on the device, with a large high-contrast "show to rescuer" view
+- **SOS / Morse signalling** by flashlight, screen strobe or tone
+- **Compass** with true and magnetic north
+- **Read aloud**, keep-screen-awake while reading, and a true-black AMOLED theme
 
-The `app/` folder holds the React Native + Expo rewrite that ships to Android, iOS and the web from one codebase. The Kotlin app in `android/` stays in the repo until the Expo app has fully replaced it on Google Play, and it remains the version published on F-Droid.
+The chapter content lives in [this project's wiki](https://github.com/guidoaguiar/SurvivalManual/wiki), so it is easy to improve.
+
+## Development
 
 ```
-git submodule update --init   # chapter content
+git submodule update --init   # chapter content (the wiki)
 cd app && npm install
 npm start                     # Expo dev server (builds content first)
 npm test                      # unit + component tests
 npm run export:web            # offline PWA in app/dist
 ```
 
+The `app/` folder is the Expo app (Expo SDK 57). The `android/` folder holds the original Kotlin app this project was forked from; it is kept for reference and is not part of the build.
+
 ### Releasing
 
+The app ID is `com.midnightcoder.survivalmanual`.
+
 1. `npx eas-cli login`, then `npx eas-cli init` once to link the project.
-2. Android: upload the existing Play upload keystore with `npx eas-cli credentials` so updates install over the current app. Bump `android.versionCode` in `app/app.json`.
-3. `npx eas-cli build --profile production --platform all`
-4. `npx eas-cli submit --platform android` (internal track first) and `npx eas-cli submit --platform ios`.
-5. iOS needs a 1024×1024 app icon at `app/assets/icon.png` before App Store submission (the current one is 512×512).
+2. `npx eas-cli build --profile production --platform all`. On the first build, let EAS generate the Android keystore and iOS credentials.
+3. `npx eas-cli submit --platform android` (internal track first) and `npx eas-cli submit --platform ios`.
+4. iOS needs a 1024×1024 app icon at `app/assets/icon.png` before App Store submission (the current one is 512×512).
+
+For each release, bump `version` and `android.versionCode` in `app/app.json`.
 
 ## Contributing
-This app is libre (open) software, so pull requests are welcome.
-If you want to help translate, the app strings are on [Transifex](https://www.transifex.com/ligi/survivalmanual/).
 
-Happy survival!
+Pull requests are welcome, for both the app and the content. To improve a chapter, edit the [wiki](https://github.com/guidoaguiar/SurvivalManual/wiki). To add or fix a translation, edit the files in `app/src/i18n/locales/`.
+
+## Credits
+
+Survival Manual was created by [ligi](https://github.com/ligi) and its contributors, who built the original app and the wiki content this project is based on. Thank you! See the in-app Credits chapter for the full list.
+
+Maintained by [Guido Aguiar](https://github.com/guidoaguiar).
 
 ## License
+
+GPLv3. See [COPYING](COPYING).
+
 THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
 BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
 ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
@@ -45,4 +62,3 @@ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR B
 HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-

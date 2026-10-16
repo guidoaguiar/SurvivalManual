@@ -8,11 +8,11 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "org.ligi.survivalmanual",
+      "bundleIdentifier": "com.midnightcoder.survivalmanual",
       "supportsTablet": true
     },
     "android": {
-      "package": "org.ligi.survivalmanual",
+      "package": "com.midnightcoder.survivalmanual",
       "versionCode": 600
     },
     "web": {
