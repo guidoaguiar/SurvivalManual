@@ -8,7 +8,7 @@ type SettingsState = SettingsValues & { set: (patch: Partial<SettingsValues>) =>
 
 export const useSettings = create<SettingsState>()(
   persist(
-    (set) => ({ theme: 'system', fontStep: 2, keepAwake: true, ttsRate: 1, legacyImported: false, set: (patch) => set(patch) }),
+    (set) => ({ theme: 'system', fontStep: 2, keepAwake: true, ttsRate: 1, legacyImported: false, language: undefined, set: (patch) => set(patch) }),
     persistConfig<SettingsState>('settings'),
   ),
 );

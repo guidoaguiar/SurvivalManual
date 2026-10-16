@@ -77,3 +77,23 @@ it('knows whether the emergency card has content', () => {
   useEmergency.getState().update({ bloodType: 'O+' });
   expect(hasCard(useEmergency.getState().card)).toBe(true);
 });
+
+it('drops wrong-shaped emergency data and keeps the defaults', async () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  kv.__map.set('emergency', '{"state":{"card":{"contacts":null,"name":5}},"version":1}');
+  await useEmergency.persist.rehydrate();
+  const { card } = useEmergency.getState();
+  expect(() => hasCard(card)).not.toThrow();
+  expect(card.contacts).toEqual([]);
+  expect(card.name).toBe('');
+  expect(warn).toHaveBeenCalled();
+  warn.mockRestore();
+});
+
+it('falls back to default settings when the stored state is not an object', async () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  kv.__map.set('settings', '{"state":"abc","version":1}');
+  await useSettings.persist.rehydrate();
+  expect(useSettings.getState()).toMatchObject({ theme: 'system', fontStep: 2, keepAwake: true, ttsRate: 1, legacyImported: false });
+  warn.mockRestore();
+});
