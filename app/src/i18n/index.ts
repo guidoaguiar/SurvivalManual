@@ -21,7 +21,9 @@ function match(candidate: string): string | undefined {
 }
 
 export function pickLanguage(override?: string, device: Device = getLocales()[0] ?? {}): string {
-  if (override) return languages.find((l) => l.toLowerCase() === override.toLowerCase()) ?? 'en';
+  // A saved override for a language that no longer exists falls through to the device locale.
+  const saved = override && languages.find((l) => l.toLowerCase() === override.toLowerCase());
+  if (saved) return saved;
   for (const c of [device.languageTag, device.languageCode]) {
     if (!c) continue;
     const hit = match(c);

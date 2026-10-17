@@ -4,7 +4,7 @@ import { blockText } from '@/lib/blockText';
 import type { Block } from '@/types/content';
 
 // Speech.pause is iOS-only, so "pause" is stop + resume from the first visible block.
-export function useReadAloud(blocks: Block[], rate: number) {
+export function useReadAloud(blocks: Block[], rate: number, language = 'en') {
   const [speaking, setSpeaking] = useState<number | null>(null);
   const run = useRef(0);
 
@@ -21,7 +21,7 @@ export function useReadAloud(blocks: Block[], rate: number) {
         setSpeaking(k);
         Speech.speak(blockText(blocks[k]), {
           rate,
-          language: 'en',
+          language,
           onDone: () => next(k + 1),
           onError: () => {
             if (token === run.current) setSpeaking(null);
@@ -31,7 +31,7 @@ export function useReadAloud(blocks: Block[], rate: number) {
       Speech.stop();
       next(start);
     },
-    [blocks, rate],
+    [blocks, rate, language],
   );
 
   const stop = useCallback(() => {

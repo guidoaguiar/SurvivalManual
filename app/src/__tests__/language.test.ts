@@ -24,7 +24,7 @@ it('picks exact tags, then the base language, then English', () => {
   expect(pickLanguage(undefined, { languageTag: 'pt_BR', languageCode: undefined })).toBe('pt-BR');
   expect(pickLanguage(undefined, {})).toBe('en');
   expect(pickLanguage('fr', { languageTag: 'pt-BR' })).toBe('fr');
-  expect(pickLanguage('xx', { languageTag: 'pt-BR' })).toBe('en');
+  expect(pickLanguage('xx', { languageTag: 'pt-BR' })).toBe('pt-BR');
 });
 
 it('names each language in its own language, falling back to the code', () => {

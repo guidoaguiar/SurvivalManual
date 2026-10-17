@@ -4,6 +4,7 @@ import { router, useFocusEffect, type Href } from 'expo-router';
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { useTranslation } from 'react-i18next';
 import { IconButton } from '@/components/IconButton';
+import { translated } from '@/content/manifest';
 import { nearestHeading } from '@/lib/chapters';
 import { useTitle } from '@/lib/useTitle';
 import { BlockView } from '@/render/BlockView';
@@ -32,7 +33,7 @@ function openImage(src: string) {
 }
 
 export function Reader({ chapter, title, initialBlock, initialQuery }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const colors = useColors();
   const fontStep = useSettings((s) => s.fontStep);
   const keepAwake = useSettings((s) => s.keepAwake);
@@ -52,7 +53,9 @@ export function Reader({ chapter, title, initialBlock, initialQuery }: Props) {
     setSeenMatches(matches);
     setCursor(firstMatch(matches));
   }
-  const { speaking, speakFrom, stop } = useReadAloud(chapter.blocks, ttsRate);
+  // Untranslated chapters fall back to English text, so speak them with an English voice.
+  const speechLang = translated[i18n.language]?.includes(chapter.slug) ? i18n.language : 'en';
+  const { speaking, speakFrom, stop } = useReadAloud(chapter.blocks, ttsRate, speechLang);
   const bookmarked = useBookmarks((s) => s.items.some((b) => b.id === bookmarkId(chapter.slug, firstVisible)));
   const toggleBookmark = useBookmarks((s) => s.toggle);
 

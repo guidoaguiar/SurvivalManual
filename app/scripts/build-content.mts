@@ -31,7 +31,7 @@ const figAnchors = (c: Converted) => Object.keys(c.chapter.anchors).filter((a) =
 
 export function findLanguages(src: string): string[] {
   return readdirSync(src, { withFileTypes: true })
-    .filter((d) => d.isDirectory() && LANG.test(d.name) && readdirSync(join(src, d.name)).some((f) => f.endsWith('.md')))
+    .filter((d) => d.isDirectory() && d.name !== 'en' && LANG.test(d.name) && readdirSync(join(src, d.name)).some((f) => f.endsWith('.md')))
     .map((d) => d.name)
     .sort();
 }

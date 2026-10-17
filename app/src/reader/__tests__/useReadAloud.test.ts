@@ -31,3 +31,9 @@ it('stop cancels and ignores late callbacks', () => {
   expect(speak).toHaveBeenCalledTimes(1);
   expect(result.current.speaking).toBeNull();
 });
+
+it('speaks in the given language', () => {
+  const { result } = renderHook(() => useReadAloud(blocks, 1, 'pt-BR'));
+  act(() => result.current.speakFrom(0));
+  expect(speak).toHaveBeenLastCalledWith('one', expect.objectContaining({ language: 'pt-BR' }));
+});
