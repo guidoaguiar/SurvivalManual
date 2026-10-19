@@ -2,8 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { convertMarkdown } from './convert.mjs';
 
-const opts = { ignored: new Set(['LifeStraw']) };
-const conv = (md: string, slug = 'Cur') => convertMarkdown(slug, md, opts);
+const conv = (md: string, slug = 'Cur') => convertMarkdown(slug, md);
 
 test('headings get anchors and are indexed', () => {
   const { chapter } = conv('# Water Sources\n\nSome text');
@@ -67,13 +66,12 @@ test('inline anchors point at their own block', () => {
   assert.equal(chapter.anchors.x, 1);
 });
 
-test('links: internal, same-page anchor, ignored, external, image', () => {
-  const { chapter, links } = conv('[Food](Food) [f](#fig8-24) [ls](LifeStraw) [w](https://x.org) [img](pic.png)');
+test('links: internal, same-page anchor, external, image', () => {
+  const { chapter, links } = conv('[Food](Food) [f](#fig8-24) [w](https://x.org) [img](pic.png)');
   const p = chapter.blocks[0];
   if (p.type !== 'paragraph') return assert.fail('expected paragraph');
   const hrefs = p.children.flatMap((n) => (n.type === 'link' ? [n.href] : []));
   assert.deepEqual(hrefs, ['/chapter/Food', '/chapter/Cur?anchor=fig8-24', 'https://x.org', '/image/pic.png']);
-  assert.ok(p.children.some((n) => n.type === 'text' && n.value.includes('ls')));
   assert.deepEqual(links, [{ slug: 'Food', anchor: undefined }, { slug: 'Cur', anchor: 'fig8-24' }]);
 });
 

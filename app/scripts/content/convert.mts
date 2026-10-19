@@ -8,7 +8,6 @@ import type { Element, ElementContent, Root, RootContent } from 'hast';
 import type { Block, Chapter, Inline } from '../../src/types/content';
 
 export type LinkRef = { slug: string; anchor?: string };
-export type ConvertOptions = { ignored: Set<string> };
 export type Converted = { chapter: Chapter; links: LinkRef[]; images: string[] };
 
 const processor = unified().use(remarkParse).use(remarkGfm).use(remarkRehype, { allowDangerousHtml: true }).use(rehypeRaw).use(rehypeSlug);
@@ -31,10 +30,7 @@ class Converter {
   links: LinkRef[] = [];
   images = new Set<string>();
 
-  constructor(
-    private slug: string,
-    private opts: ConvertOptions,
-  ) {}
+  constructor(private slug: string) {}
 
   takeAnchors(): string[] {
     const a = this.anchors;
@@ -166,7 +162,6 @@ class Converter {
       return [{ type: 'link', href: `/image/${encodeURIComponent(path)}`, children }];
     }
     const slug = path || this.slug;
-    if (this.opts.ignored.has(slug)) return children;
     this.links.push({ slug, anchor });
     return [{ type: 'link', href: `/chapter/${encodeURIComponent(slug)}${anchor ? `?anchor=${encodeURIComponent(anchor)}` : ''}`, children }];
   }
@@ -203,9 +198,9 @@ function trimInlines(nodes: Inline[]): Inline[] {
   return merged.filter((n) => !(n.type === 'text' && n.value === ''));
 }
 
-export function convertMarkdown(slug: string, md: string, opts: ConvertOptions): Converted {
+export function convertMarkdown(slug: string, md: string): Converted {
   const tree = processor.runSync(processor.parse(md)) as Root;
-  const c = new Converter(slug, opts);
+  const c = new Converter(slug);
   const blocks: Block[] = [];
   const anchors: Record<string, number> = {};
   let pending: string[] = [];

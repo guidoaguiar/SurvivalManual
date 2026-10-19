@@ -22,12 +22,11 @@ const input = (dirs: ReturnType<typeof setup>, slugs = ['Alpha', 'Beta']) => ({
   ...dirs,
   slugs,
   titles: { en: { Alpha: 'Alpha', Beta: 'Beta' }, 'pt-BR': { Alpha: 'Alfa', Beta: 'Beta' } },
-  ignored: ['LifeStraw'],
 });
 const read = (p: string) => readFileSync(p, 'utf8');
 
 test('builds English chapters, loaders, images and index', () => {
-  const dirs = setup({ 'Alpha.md': '# A\n\nWater [b](Beta) [ls](LifeStraw)\n\n![Fig](pic.png)', 'Beta.md': 'Fire', 'pic.png': PNG });
+  const dirs = setup({ 'Alpha.md': '# A\n\nWater [b](Beta)\n\n![Fig](pic.png)', 'Beta.md': 'Fire', 'pic.png': PNG });
   const { warnings, languages } = buildContent(input(dirs));
   assert.deepEqual(warnings, []);
   assert.deepEqual(languages, ['en']);

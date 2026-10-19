@@ -7,7 +7,7 @@ import { convertMarkdown, type Converted } from './content/convert.mjs';
 import { sectionsOf } from './content/sections.mjs';
 import { validate } from './content/validate.mjs';
 import { indexOptions } from '../src/search/options';
-import { IGNORED_LINKS, toc } from '../src/toc';
+import { toc } from '../src/toc';
 import type { SearchDoc } from '../src/types/content';
 
 export type BuildInput = {
@@ -16,7 +16,6 @@ export type BuildInput = {
   imgOut: string;
   slugs: string[];
   titles: Record<string, Record<string, string>>;
-  ignored: string[];
   localesDir?: string;
 };
 
@@ -39,7 +38,6 @@ export function findLanguages(src: string): string[] {
 export function buildContent(i: BuildInput): { warnings: string[]; languages: string[] } {
   const errors: string[] = [];
   const warnings: string[] = [];
-  const opts = { ignored: new Set(i.ignored) };
   const exists = (name: string) => existsSync(join(i.src, name));
 
   const english = new Map<string, Converted>();
@@ -49,7 +47,7 @@ export function buildContent(i: BuildInput): { warnings: string[]; languages: st
       errors.push(`${slug}: missing markdown file ${file}`);
       continue;
     }
-    english.set(slug, convertMarkdown(slug, readFileSync(file, 'utf8'), opts));
+    english.set(slug, convertMarkdown(slug, readFileSync(file, 'utf8')));
   }
   const enChecked = validate(english, exists);
   errors.push(...enChecked.errors);
@@ -64,7 +62,7 @@ export function buildContent(i: BuildInput): { warnings: string[]; languages: st
     for (const slug of i.slugs) {
       const file = join(i.src, lang, `${slug}.md`);
       if (!existsSync(file)) continue;
-      const c = convertMarkdown(slug, readFileSync(file, 'utf8'), opts);
+      const c = convertMarkdown(slug, readFileSync(file, 'utf8'));
       merged.set(slug, c);
       own.add(slug);
       const source = english.get(slug);
@@ -154,7 +152,6 @@ function main() {
     imgOut: join(root, 'assets/content'),
     slugs: toc.map((e) => e.slug),
     titles,
-    ignored: IGNORED_LINKS,
     localesDir,
   });
   for (const w of warnings) console.warn(`warn: ${w}`);
